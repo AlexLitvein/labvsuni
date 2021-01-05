@@ -1,0 +1,27 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2021": true
+    },
+    "extends": [
+        "standard"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 12
+    },
+    "rules": {
+        "no-var": "error",
+    "semi": 0,
+    "indent": "off",
+    "no-multi-spaces": "off",
+    "space-in-parens": "error",
+    "no-multiple-empty-lines": "error",
+    "prefer-const": "error",
+    "no-use-before-define": "error",
+    "no-console": "off",
+    "no-unused-expressions": ["off", { "allowShortCircuit": true, "allowTernary": true }],
+    "no-mixed-spaces-and-tabs": ["error", "smart-tabs"],
+    "no-tabs": ["error", { "allowIndentationTabs": true }]
+    }
+}
