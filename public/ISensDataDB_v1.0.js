@@ -68,6 +68,18 @@ function DataCollector () {
     //     });
     // }
 
+    this.AddAnyOneData = function name (dbName, collName, dataIn) {
+        MongoClient.connect(url, opt,
+            function (err, gDB) {
+                if (err) throw err;
+                const dbo = gDB.db(dbName);
+                dbo.collection(collName).insertOne(dataIn, function (err, res) {
+                    if (err) throw err;
+                    gDB.close();
+                });
+            });
+    }
+
     this.AddSensData = function name (sensData) {
         const date = new Date();
         const collName = 'sensData_' + date.getFullYear();

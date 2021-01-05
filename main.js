@@ -17,13 +17,17 @@ const cron = require('node-cron'); // npm install cron , npm install --save node
 // │ │ │ │ │ ┌──── day of week
 // * * * * * *
 const task = cron.schedule('* */24 * * *', () =>  { // '0 */1 * * *'
-    console.log('boom!');
+    // console.log('boom!');
     // console.log(visitCount.GetName());
+    const dataIn = {
+      d: new Date(),
+      count: visitCount.GetCount()
+    };
+    dataColl.AddAnyOneData('statistic', 'visit', dataIn);
     visitCount.Reset();
   }, {
     scheduled: true, timezone: 'Asia/Novosibirsk'
   });
-
   task.start();
   // task.stop();
 // --------------------------------------
