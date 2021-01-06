@@ -1,0 +1,156 @@
+input, select, body{
+    color: #FFFFFF;
+    font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, sans-serif;
+}
+
+label{
+	display: inline-block;
+/*	text-align: right;*/
+	width: 92px;
+}
+
+body {
+    background-image: url(../img/snowflake01.jpg);
+	margin: 0;
+	padding: 0;
+}
+
+p{
+	margin: 0;
+/*	padding: 0 0 0 0;*/
+}
+
+.midVCont {
+  display: flex;
+}
+
+.divLeft, .divRight, .header, .footer, .notes, .info, input, select {
+/*input, select{*/
+	
+	background-color: #072A60cc;
+    border: 2px solid #C4B8FF;
+    border-radius: 8px; 
+	margin: 2px;
+	padding: 2px;
+}
+
+.info {
+	/* display: inline-block; */
+	/* padding-bottom: 0.5em; */
+	/* padding-top: -1.5em; */
+	width: 20px; 
+	height: 20px; 
+	text-align: center;
+}
+
+.divLeft {
+	flex: 1 ;
+/*	width: 0px;*/
+	display: none;
+}
+
+.center {
+	flex: 3 ;
+}
+
+.divRight {
+    flex: 1;
+    display: none;
+}
+
+.footer {
+    height: 50px;
+/*    background: pink;*/
+/*    clear: both;*/
+}
+
+.divInner{
+/*	border: initial;*/
+/*	    border: 2px solid #C4B8FF;*/
+/*    border-radius: initial;    */
+    /*border-style: dashed;
+    border-color: #FFFFFF;*/
+/*    width: 100%;*/
+	flex: 1 ;
+/*    background-color: #D4282B;*/
+/*	margin: 0 0 0 0;*/
+/*
+    padding-top: 3px;
+    padding-right: 3px;
+    padding-bottom: 3px;
+    padding-left: 3px;
+*/
+    
+}
+
+.clrInput{
+	border:none;
+	width: 1em;
+	height: 1em;
+	margin: 0;
+	padding: 0;
+}
+
+.buttNext{
+	width: 60px;
+	height: 2em;
+}
+
+.rotBtn
+{
+	/* transform: translate(0px, -20px); */
+	transform-origin: 50% 12px;
+	/* transform-origin: 50% 50%; */
+	padding-bottom: 0.4em;
+	/* padding-bottom: 50px; */
+	/* transform: rotate(180deg); */
+	transition: transform 2s; 
+	
+}
+
+.buttPan{
+    width: 1em;
+    height: 40px;
+	top:50%;
+	background: #072A60;
+/*	left: 50%;*/
+/*    display: table-cell;*/
+    /*    margin-top: 50%;*/
+/*	margin-bottom: 50%;*/
+/*    margin-left: -0.7em;*/
+/*    vertical-align: bottom;*/
+    position: absolute;/*    top: 20px;		*/
+/*	text-align: center;*/
+}
+
+canvas {
+    /*width: 720px;
+    height: 720px;*/
+/*    position: static;*/
+    /*border-style: dashed;
+    border-color: #FFFFFF;*/
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #917400;
+}
+
+.overlay {
+    position: absolute;
+	/* float: right; */
+	/* right: 0px; */
+	/* text-align: right; */
+	/* position: relative; */
+	/* height: 60%; */
+	/* max-height:10em; */
+	/* overflow:auto; */
+	/* width: 30%; */
+	/* max-width:15em; */
+	/* margin-left:-5em; */
+	/* border: 1px solid #333; */
+	/* background: #eee; */
+	display: none;
+	z-index:1;
+	/* padding:10px; */
+	/* color: #333333 !important; */
+}

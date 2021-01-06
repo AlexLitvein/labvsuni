@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Погода за окном</title>
+	<link href="css/MyWebApp.css" rel="stylesheet" type="text/css">
+	<script src="/jslib/jquery-3.5.1.js" type="text/javascript"></script>
+	<script src="/weather/js/MyWebApp.js" type="text/javascript"></script>
+	<script src="/weather/js/MyGraph.js" type="text/javascript"></script>
+	{{!-- <script src="/helpers.js" type="text/javascript"></script> --}}
+</head>
+
+<body>
+
+	<div class="header">
+		<h1 style="text-align: center">Погода в городе Юрга</h1>
+	</div>
+	<div style="display: flex">
+		<div class="divLeft" id='panL'>
+			divLeft
+		</div>
+		<div class="center">
+			<div class="notes" style="display: flex">
+				<div class="divInner">
+					<label for="selDate" style="width: 2em">Дата</label>
+					<input name="startData" type="date" id="selDate" style="width: 8em" /><br>
+					<label for="selRange" style="width: 4em">Период&nbsp;&nbsp;</label>
+					<select name="range" id="selRange" style="width: 6em">
+						<option value="1">1д</option>
+						<option value="10">10д</option>
+						<option value="30">30д</option>
+					</select><br>
+					<input type="button" id="startButt" style="width:11em; height:32px" title="title" value="Старт" />
+				</div>
+				{{!-- <div class="divInner" style="font-size: 54pt; text-align: center" ><p id="tmp">-33</p><img src="/weather/img/relBut.png" width="29" height="24" id="relBtn" class="rotBtn"/>С</div> --}}
+				<div class="divInner" style="font-size: 54pt; text-align: center" ><span id="tmp">-33</span><img src="/weather/img/relBut.png" width="29" height="24" id="relBtn" class="rotBtn"/>С</div>
+				
+				<div class="divInner" style="font-size: 14pt">
+					<!-- <div id="idNotes" class="notes " style="width: 20px; height: 20px; text-align: center; float: right">	 -->
+					<div id="idNotes" class="notes info">						
+						i
+						<div class="notes overlay">
+							<!-- <p>Сервис запущен в демо-режиме 20.12.2020. Все данные сгенерированы рандомными.</p> -->
+							Текущие данные обновляются на сервере раз в 10 минут.<br>
+							Сохраняются в базу раз в час.
+							{{!-- Сервис запущен в демо-режиме 20.12.2020. Все данные сгенерированы рандомными. --}}
+						</div>
+					</div>
+					
+					<p id="idhd">сейчас<br>влажность 60 %<br>атм. давл. 762 мм рт.ст.</p>
+				</div>
+			</div>
+			<div class="notes">
+				<div style="display: flex">
+					<div class="divInner">
+						<label>Давление</label>
+						<input type="checkbox" name="CheckboxGroup1" value="флажок" id="CheckboxGroup1_0" checked>
+						<input type="color" name="color" id="color" class="clrInput" value="#00ff35">
+						
+						<br>
+						<label>Температура</label>
+						<input type="checkbox" name="CheckboxGroup1" value="флажок" id="CheckboxGroup1_1" checked>
+						<input type="color" name="color" id="color" class="clrInput" value="#C86F32"><br>
+						<label>Влажность</label>
+						<input type="checkbox" name="CheckboxGroup1" value="флажок" id="CheckboxGroup1_2" checked>
+						<input type="color" name="color" id="color" class="clrInput" value="#00FFFF">
+						
+						{{!-- <br> --}}
+						<input type="button" name="button" id="btnSet" value="Применить" >
+					</div>
+					<div class="divInner" style="display: flex; align-items:flex-end; ">
+					{{!-- <div class="divInner" > --}}
+						<p style="flex: 1; text-align: center">
+							<input type="button" name="button" id="btnPrev" value="<" class="buttNext">
+							<input type="button" name="button" id="btnNext" value=">" class="buttNext">
+						</p>
+					</div>
+					<div class="divInner"></div>
+				</div>
+			</div>
+			<div class="notes" style="position: relative">
+				<input type="button" name="button" id="panButL" value="|" class="buttPan" style="margin-left: -0.7em">
+				<input type="button" name="button" id="panButR" value="|" class="buttPan"
+					style="left: 100%; margin-left: -0.4em">
+				<canvas width='720' height='720'></canvas>
+			</div>
+
+		</div>
+		<div class="divRight" id='panR'>			
+			{{{body}}}
+			{{>rpan}}
+		</div>
+	</div>
+	<div class="footer">footer</div>
+
+</body>
+<script>
+	$(document).ready(function (evt) {
+		// let bodyElm = document.getElementById('bodyID');
+		let bodyElm = document.getElementsByTagName('body');
+		let myApp = new MyWebApp(bodyElm);
+		myApp.init();
+	});
+</script>
+</html>
