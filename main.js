@@ -2,8 +2,8 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const  morgan  =  require('morgan');
 const path = require('path');
-const dataColl = new (require('./public/ISensDataDB_v1.0'))();
-const visitCount = new (require('./public/helpers')).VisiterCounter();
+const dataColl = new (require('./comjs/ISensDataDB_v1.0'))();
+const visitCount = new (require('./comjs/helpers_be')).VisiterCounter();
 const favicon  =  require('serve-favicon');
 const rfs = require('rotating-file-stream'); // version 2.x
 const cron = require('node-cron'); // npm install cron , npm install --save node-cron
@@ -17,13 +17,17 @@ const cron = require('node-cron'); // npm install cron , npm install --save node
 // │ │ │ │ │ ┌──── day of week
 // * * * * * *
 const task = cron.schedule('* */24 * * *', () =>  { // '0 */1 * * *'
-    console.log('boom!');
+    // console.log('boom!');
     // console.log(visitCount.GetName());
+    const dataIn = {
+      d: new Date(),
+      count: visitCount.GetCount()
+    };
+    dataColl.AddAnyOneData('statistic', 'visit', dataIn);
     visitCount.Reset();
   }, {
     scheduled: true, timezone: 'Asia/Novosibirsk'
   });
-
   task.start();
   // task.stop();
 // --------------------------------------
@@ -129,9 +133,4 @@ app.use(function (err, req, res, next) {
 // app.listen(app.get('port'), function () {
 //    console.log('Express запущен на http://localhost:' +
 //      app.get('port') + '; нажмите Ctrl+C для завершения.');
-// });
-// return Class: net.Server
-// app.listen(app.get('port'), function () {
-//   console.log('Express запущен на localhost:' +
-//     app.get('port') + '; нажмите Ctrl+C для завершения.');
 // });

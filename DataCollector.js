@@ -4,7 +4,7 @@ const cron = require('node-cron');
 const dataColl = new (require('./public/ISensDataDB_v1.0'))();
 const client = new net.Socket();
 
-//let doCollect = true;
+// let doCollect = true;
 // const idTim = null;
 let task = null;
 // let arrDbData = null;
@@ -34,7 +34,7 @@ const cntDays = 31;
 
 function GetSensData () {
     // console.log('Tick.');
-    //if (doCollect) {
+    // if (doCollect) {
         client.connect(80, '192.168.0.11', function () {
             // console.log('Connected');
             client.write('GET /sensdata');
@@ -44,7 +44,7 @@ function GetSensData () {
         //     console.log('Connected');
         //     client.write('GET /sensdata');
         // });
-    //}
+    // }
 }
 
 function encodeData (data) {
@@ -108,7 +108,6 @@ client.on('data', function (data) {
 
         console.log('Date: ' + sensJSON._id);
 
-
         dataColl.AddCurrSensData(sensJSON);
         if ((sensJSON._id.getMinutes() % 60) === 0) {
             dataColl.AddSensData(sensJSON);
@@ -124,7 +123,7 @@ client.on('data', function (data) {
 // });
 
 client.on('error', function () {
-    //doCollect = false;
+    // doCollect = false;
     // client.removeAllListeners(); // тогда не перехватываются исключения при подключении
 	console.log('error connection');
 });
