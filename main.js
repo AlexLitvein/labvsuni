@@ -85,12 +85,12 @@ app.get('/', function (req, res) {
 
 app.post('/weather/getSensData', function (req, res) {
     const date = new Date(req.body.startData);
-    //const toffs =  date.getTimezoneOffset();
-    //date.setHours(-toffs / 60);
+    // const toffs =  date.getTimezoneOffset();
+    // date.setHours(-toffs / 60);
     date.setHours(0);
     const range = parseInt(req.body.range);
     // console.log('req data: %s %d', date, range);
-    //const date = new Date();
+    // const date = new Date();
     const collName = 'sensData_' + date.getFullYear();
     // TODO: имя коллекции от года в запросе
     dataColl.GetSensData(collName, date, range, res);
