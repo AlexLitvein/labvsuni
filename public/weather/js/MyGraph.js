@@ -62,6 +62,14 @@ function MyGraph (context, x, y, width, height) {
             console.log('Hi, I am a ', mName + '.');
         },
 
+        GetOrigin () {
+            return { orgX: mX, origY: dataLabelLen + labelOffs };
+        },
+
+        GetGraphSize () {
+            return { w: mW, h: mH };
+        },
+
         setDrawOpt (opt) {
             // $.each(jqArr, function (index, value) {
             //     //console.log($(value).val());

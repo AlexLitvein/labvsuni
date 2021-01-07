@@ -1,7 +1,7 @@
 const net = require('net');
 const cron = require('node-cron');
 // const { deflateSync } = require('zlib');
-const dataColl = new (require('./public/ISensDataDB_v1.0'))();
+const dataColl = new (require('./comjs/ISensDataDB_v1.0'))();
 const client = new net.Socket();
 
 let doCollect = true;

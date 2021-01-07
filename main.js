@@ -2,8 +2,8 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const  morgan  =  require('morgan');
 const path = require('path');
-const dataColl = new (require('./public/ISensDataDB_v1.0'))();
-const visitCount = new (require('./public/helpers')).VisiterCounter();
+const dataColl = new (require('./comjs/ISensDataDB_v1.0'))();
+const visitCount = new (require('./comjs/helpers_be')).VisiterCounter();
 const favicon  =  require('serve-favicon');
 const rfs = require('rotating-file-stream'); // version 2.x
 const cron = require('node-cron'); // npm install cron , npm install --save node-cron
@@ -44,7 +44,7 @@ app.set('port', process.env.PORT || 3000);
 
 // return Class: net.Server
 app.listen(app.get('port'), function () {
-    console.log('Express запущен на http://localhost:' +
+    console.log('Express запущен на localhost:' +
       app.get('port') + '; нажмите Ctrl+C для завершения.');
  });
 

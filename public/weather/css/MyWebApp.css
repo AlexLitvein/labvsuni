@@ -99,7 +99,7 @@ p{
 .rotBtn
 {
 	/* transform: translate(0px, -20px); */
-	transform-origin: 50% 12px;
+	transform-origin: 50% 10px;
 	/* transform-origin: 50% 50%; */
 	padding-bottom: 0.4em;
 	/* padding-bottom: 50px; */

@@ -17,9 +17,9 @@ class CookiesMy {
                 if (typeof (obj[prop]) === 'object') {
                     sObj += '"' + prop + '"' + ':' + this.objToString(obj[prop]) + ',';
                 } else
-                if (typeof (obj[prop]) === 'string') {
-                    sObj += '"' + prop + '"' + ':' + '"' + obj[prop] + '"' + ',';
-                } else sObj += '"' + prop + '"' + ':' + obj[prop] + ',';
+                    if (typeof (obj[prop]) === 'string') {
+                        sObj += '"' + prop + '"' + ':' + '"' + obj[prop] + '"' + ',';
+                    } else sObj += '"' + prop + '"' + ':' + obj[prop] + ',';
             }
             return sObj.substr(0, sObj.length - 1) + '}';
         };
@@ -67,14 +67,14 @@ class CookiesMy {
         // Если значение уже было помещено в кэш, использовать это значение
         // if (Cookie.enabled.cache !== undefined) return Cookie.enabled.cache;
         // Иначе создать тестовый cookie с некоторым временем жизни
-       // document.cookie = 'testcookie=test; maxage=10000'; // Установить cookie
+        // document.cookie = 'testcookie=test; maxage=10000'; // Установить cookie
         // Теперь проверить-был ли сохранен cookie-файл
         // const cookies = document.cookie;
         // if (cookies.indexOf('testcookie=test') === -1) {
-            // Cookie не был сохранен
+        // Cookie не был сохранен
         //    return Cookie.enabled.cache = false;
-       // } else {
-            // Cookie был сохранен, поэтому его нужно удалить перед выходом
+        // } else {
+        // Cookie был сохранен, поэтому его нужно удалить перед выходом
         //    document.cookie = 'testcookie=test; maxage=0'; // Удалить cookie
         //    return Cookie.enabled.cache = true;
         // }
@@ -92,6 +92,7 @@ function MyWebApp (bodyElm) {
     // const mArrRequestData = null;
     let mArrDbData = null;
     const mGraph = new MyGraph($('canvas')[0].getContext('2d'), 30, 30, 720, 720);
+    // const viscnt = new VisiterCounter();
     const mCookie = new CookiesMy();
 
     // const nextButt = $(mBodyElm).find('#startButt');
@@ -100,6 +101,10 @@ function MyWebApp (bodyElm) {
 
     const panLeft = $(mBodyElm).find('#panL');
     const panRight = $(mBodyElm).find('#panR');
+    const domCanv1 = document.getElementById('canv1'); // $(mBodyElm).find('#canv1');
+    const domTinfo = document.getElementById('tinfo');
+    // domTinfo.style.left = domCanv1.offsetLeft + 'px';
+    // domTinfo.style.top = domCanv1.offsetTop + 'px';
 
     let currAngle = 0;
 
@@ -123,7 +128,6 @@ function MyWebApp (bodyElm) {
     //     for (let i = 0; i < (365 * 24) + 1; i++) {
     //         var fakeData = {data: 0, temp: 0, p: 0, hg: 0}; // именно в теле цикла!!!
     //         data.setHours(data.getHours() + 1);
-
     //         //console.log(data.getMonth());
     //         fakeData.data =  ("0" + data.getHours()).slice(-2) + "/" + ("0" + data.getDate()).slice(-2) + "/" + ("0" + data.getMonth()).slice(-2) + "/" + data.getFullYear()%100;
     //         //fakeData.data =  ("0" + data.getDate()).slice(-2) + "/" + data.getMonth() + "/" + data.getFullYear() % 100 + "/" + data.getHours();
@@ -133,7 +137,6 @@ function MyWebApp (bodyElm) {
     //         arrData.push(fakeData);
     //     }
     //     m_arrDbData = arrData;
-
     // }
 
     // --------------------------self init---------------------------------
@@ -148,28 +151,67 @@ function MyWebApp (bodyElm) {
                 return;
             }
 
-            // console.log('cookie enabled? ' + mCookie.IsEnabled());
-            // // const sCook = mCookie.CreateCookieString('drawData', drawOpt);
-            // // console.log(sCook);
-            // // document.cookie = sCook;
+            // document.onmousemove = function (e) {
+            //     curx = e.pageX;
+            //     cury = e.pageY;
+            // }
 
-            // const oOpt = mCookie.GetData('drawData');
-            // console.log(oOpt);
+            let xpos = domTinfo.offsetLeft;
+            let ypos = domTinfo.offsetTop;
+            domCanv1.addEventListener('mousemove', function (event) {
+                if (event.buttons === 1) {
+                    const x = xpos += event.movementX;
+                    const y = ypos += event.movementY;
+                    // if (x > ) {
+                    // const curx = event.offsetX;
+                    // const cury = event.offsetY;
 
-            // document.getElementById('selDate').valueAsDate = new Date();
-            $(mBodyElm).find('#selDate')[0].valueAsDate = new Date();
+                    // const curx = x;
+                    // const cury = y;
+                    const gsize = mGraph.GetGraphSize();
+                    const gorig = mGraph.GetOrigin();
+                    // const rngP = 100; // 700-800
+                    // const magic = (720 - cury - gorig.origY) * (rngP / gsize.h);
+                    // const p = ((720 - cury - gorig.origY) * (rngP / gsize.h) + 700).toFixed(1);
+                    // const t = (((720 - cury - gorig.origY) * (100 / gsize.h)) - 50).toFixed(1);
+                    // const h = ((720 - cury - gorig.origY) * (100 / gsize.h)).toFixed(1);
+
+                    const magic = (720 - y - gorig.origY) * (100 / gsize.h);
+                    const p = (magic + 700).toFixed(1);
+                    const t = ((magic) - 50).toFixed(1);
+                    const h = (magic).toFixed(1);
+
+                    // }
+                    // domTinfo.style.left = (xpos += event.movementX)  + 'px';
+                    // domTinfo.style.top = (ypos += event.movementY) + 'px';
+                    domTinfo.style.left = x  + 'px';
+                    domTinfo.style.top = y + 'px';
+
+                    // const msg0 = 'p: ' + p + '<br>t: ' + t + '<br>h: ' + h;
+                    // const msg1 = ' offsetY: ' + event.offsetY + '';
+                    const infParam = document.getElementById('infParam');
+                    infParam.innerHTML = 'p: ' + p + '<br>t: ' + t + '<br>h: ' + h;// + msg1;
+                // domTinfo.style.left = event.offsetX  + 'px';
+                // domTinfo.style.top = event.offsetY + 'px';
+                }
+            });
+
+            const currDate = new Date();
+            // const toffs =  currDate.getTimezoneOffset();
+            // currDate.setHours(-toffs / 60);
+            $(mBodyElm).find('#selDate')[0].valueAsDate = currDate;
 
             // TODO: Выровнять инфо по правому краю родителя
             $(mBodyElm).on('mouseenter mouseleave', '#idNotes', function (evt) {
                 // console.log('mouse');
-                   if (evt.type === 'mouseenter') {
+                if (evt.type === 'mouseenter') {
                     // console.log('mouseenter');
-                       $(evt.target).children('.overlay').slideDown('fast');
-                   } else {
+                    $(evt.target).children('.overlay').slideDown('fast');
+                } else {
                     // console.log('mouse else');
                     $('#idNotes').children('.overlay').slideUp('fast');
-                   }
-               });
+                }
+            });
 
             $(mBodyElm).find('#startButt').click(
                 function (evt) {
@@ -200,11 +242,11 @@ function MyWebApp (bodyElm) {
                     if (evt.target.id === 'btnPrev') {
                         console.log(typeof (evt.target.id));
                         incRange = -incRange;
-                     }
+                    }
 
                     const dt = new Date(selDataObj.val());
                     dt.setDate(dt.getDate() + incRange);
-                     // преобр в DOM объект, jquery объект не устанавл знач в DOM  объекте???
+                    // преобр в DOM объект, jquery объект не устанавл знач в DOM  объекте???
                     selDataObj[0].valueAsDate = new Date(dt);
                     this.requestSensDataUrlencoded(dt.toDateString(), rangeObj.val());
                 }.bind(this)
@@ -253,25 +295,25 @@ function MyWebApp (bodyElm) {
 
         requestSensDataUrlencoded: function (data, range) {
             // if (document.forms[0].checkValidity()) {
-                const body = 'startData=' + encodeURIComponent(data) +
-                            '&range=' + encodeURIComponent(range);
-                const xhr = new XMLHttpRequest();
-                xhr.timeout = 3000; // (в миллисекундах)
-                xhr.open('POST', '/weather/getSensData', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.send(body);
+            const body = 'startData=' + encodeURIComponent(data) +
+                '&range=' + encodeURIComponent(range);
+            const xhr = new XMLHttpRequest();
+            xhr.timeout = 3000; // (в миллисекундах)
+            xhr.open('POST', '/weather/getSensData', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.send(body);
 
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                        mArrDbData = JSON.parse(this.responseText);
-                        if (mArrDbData.llength !== 0) {
-                            // console.log('m_arrDbData: %f', m_arrDbData[0].p);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    mArrDbData = JSON.parse(this.responseText);
+                    if (mArrDbData.llength !== 0) {
+                        // console.log('m_arrDbData: %f', m_arrDbData[0].p);
 
-                            // Draw();
-                            mGraph.drawGraph(mArrDbData, parseInt(range));
-                        }
+                        // Draw();
+                        mGraph.drawGraph(mArrDbData, parseInt(range));
                     }
                 }
+            }
             // }
         },
 
@@ -323,29 +365,29 @@ function MyWebApp (bodyElm) {
         },
 
         reqCurrSensDataUrlencoded: function () {
-                const xhr = new XMLHttpRequest();
-                xhr.timeout = 3000; // (в миллисекундах)
-                xhr.open('POST', '/weather/getCurrSensData', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.send();
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                        const currSensData = JSON.parse(this.responseText);
-                        if (currSensData.length !== 0) {
-                            // const hdText = $(mBodyElm).find('#idhd');
-                            $(mBodyElm).find('#idhd').html('сейчас<br>влажность ' + currSensData[0].h + ' %<br>атм. давл. ' + currSensData[0].p + ' мм рт.ст.');
+            const xhr = new XMLHttpRequest();
+            xhr.timeout = 3000; // (в миллисекундах)
+            xhr.open('POST', '/weather/getCurrSensData', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.send();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    const currSensData = JSON.parse(this.responseText);
+                    if (currSensData.length !== 0) {
+                        // const hdText = $(mBodyElm).find('#idhd');
+                        $(mBodyElm).find('#idhd').html('сейчас<br>влажность ' + currSensData[0].h + ' %<br>атм. давл. ' + currSensData[0].p + ' мм рт.ст.');
 
-                            let strT = currSensData[0].t.toString();
-                            if (currSensData[0].t > 0) {
-                                strT = '+' + strT;
-                            }
-                            $(mBodyElm).find('#tmp').html(strT);
-                            // $(mBodyElm).find('#tmp').html(currSensData[0].t);
-
-                            // console.log(currSensData[0].h);
+                        let strT = currSensData[0].t.toString();
+                        if (currSensData[0].t > 0) {
+                            strT = '+' + strT;
                         }
+                        $(mBodyElm).find('#tmp').html(strT);
+                        // $(mBodyElm).find('#tmp').html(currSensData[0].t);
+
+                        // console.log(currSensData[0].h);
                     }
                 }
+            }
         },
 
         requestSensDataJSON: function () {
