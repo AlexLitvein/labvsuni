@@ -197,9 +197,15 @@ function MyWebApp (bodyElm) {
             });
 
             const currDate = new Date();
-            // const toffs =  currDate.getTimezoneOffset();
-            // currDate.setHours(-toffs / 60);
-            $(mBodyElm).find('#selDate')[0].valueAsDate = currDate;
+            const toffs =  currDate.getTimezoneOffset();
+            currDate.setHours(currDate.getHours() - toffs / 60);
+            // элемнт input date при установке отнимает текущ таймофсет от входного
+            // значения (день может измениться!), а отображает - этот день плюс тупо
+            // местн таймофсет, поэтому время будет всегда = вр по гринвичу + текущ таймофсет
+            selDataObj[0].valueAsDate = currDate;
+             // selDataObj.val(currDate);
+            // selDataObj[0].valueAsNumber = Date.now();
+            // $(mBodyElm).find('#selDate')[0].valueAsDate = currDate;
 
             // TODO: Выровнять инфо по правому краю родителя
             $(mBodyElm).on('mouseenter mouseleave', '#idNotes', function (evt) {

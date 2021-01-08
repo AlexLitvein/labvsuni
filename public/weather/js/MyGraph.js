@@ -163,8 +163,8 @@ function MyGraph (context, x, y, width, height) {
             // for (let i = 0; i < arrData.length; i++) {
                 for (let i = 0; i < arrData.length; i += incDBDataIdx) {
                 const data = new Date(arrData[i]._id);
-                const toffs = data.getTimezoneOffset();
-                data.setHours(data.getHours() + toffs / 60);
+                // const toffs = data.getTimezoneOffset();
+                // data.setHours(data.getHours() + toffs / 60);
                 const dataStr = ('0' + data.getHours()).slice(-2) + '/' + ('0' + data.getDate()).slice(-2) + '/' + ('0' + (data.getMonth() + 1)).slice(-2) + '/' + data.getFullYear() % 100;
 
                 currDay = data.getDate();
@@ -215,9 +215,9 @@ function MyGraph (context, x, y, width, height) {
                 // pathTemp.lineTo(m_x + m_dxVLine * i,m_y - ((m_arrData[i].temp + 50) / 100) * m_h);
                 // pathP.lineTo(m_x + m_dxVLine * i,m_y - ((m_arrData[i].p) / 1000) * m_h);
                 // pathHg.lineTo(m_x + m_dxVLine * i,m_y - ((m_arrData[i].hg) / 100) * m_h);
-                pathTemp.lineTo(mX + dxVLine * inc, mY - ((arrData[i].temp + 50) / 100) * mH);
+                pathTemp.lineTo(mX + dxVLine * inc, mY - ((arrData[i].t + 50) / 100) * mH);
                 pathP.lineTo(mX + dxVLine * inc, mY - ((arrData[i].p - 700) / 100) * mH);
-                pathHg.lineTo(mX + dxVLine * inc, mY - ((arrData[i].hg) / 100) * mH);
+                pathHg.lineTo(mX + dxVLine * inc, mY - ((arrData[i].h) / 100) * mH);
                 inc++;
                 // console.log(i);
             }

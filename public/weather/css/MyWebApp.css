@@ -3,6 +3,16 @@ input, select, body{
     font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, sans-serif;
 }
 
+input:hover 
+{
+	background-color: #3565B0
+}
+
+input:active {
+/*  box-shadow: 0 5px #666;*/
+  transform: translateY(2px);
+}
+
 label{
 	display: inline-block;
 /*	text-align: right;*/
@@ -32,6 +42,7 @@ p{
     border-radius: 8px; 
 	margin: 2px;
 	padding: 2px;
+	user-select: none;
 }
 
 .info {
