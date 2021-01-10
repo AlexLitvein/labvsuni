@@ -1,3 +1,5 @@
+const fs = require('fs');
+const https = require('https');
 const express = require('express');
 const exphbs = require('express-handlebars');
 const  morgan  =  require('morgan');
@@ -8,6 +10,34 @@ const favicon  =  require('serve-favicon');
 const rfs = require('rotating-file-stream'); // version 2.x
 const cron = require('node-cron'); // npm install cron , npm install --save node-cron
 
+// ---------------------------------------
+
+// const hostname = 'exampledomain.com'; const port = 443;
+const httpsOptions = {
+  cert: fs.readFileSync('./ssl/certificate.crt'),
+  ca: fs.readFileSync('./ssl/ca_bundle.crt'),
+  key: fs.readFileSync('./ssl/private.key')
+};
+
+const app = express();
+app.set('port', 443);
+app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }));
+app.set('view engine', 'hbs');
+
+const httpsServer = https.createServer(httpsOptions, app);
+httpsServer.listen(app.get('port'), function () {
+      console.log('Express запущен на localhost:' +
+        app.get('port') + '; нажмите Ctrl+C для завершения.');
+   });
+// -------------------------
+// const app = express();
+// app.set('port', 80);
+
+// // return Class: net.Server
+// app.listen(app.get('port'), function () {
+//     console.log('Express запущен на localhost:' +
+//       app.get('port') + '; нажмите Ctrl+C для завершения.');
+//  });
 // --------------------------------------
 // ┌────────────── second (optional)
 // │ ┌──────────── minute
@@ -39,17 +69,7 @@ const accessLogStream = rfs.createStream('access.log', {
     path: path.join(__dirname, 'log')
   });
 
-const app = express();
-app.set('port', 80);
-
-// return Class: net.Server
-app.listen(app.get('port'), function () {
-    console.log('Express запущен на localhost:' +
-      app.get('port') + '; нажмите Ctrl+C для завершения.');
- });
-
-app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }));
-app.set('view engine', 'hbs');
+// -------------------------
 
  // -----------------------
 //  const socketio = require('socket.io')(server);
@@ -78,8 +98,6 @@ app.use(morgan('combined', {
 
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-// app.use(express.json());
-// app.use(express.static(path.join(__dirname, '/weather/public')));
 app.use(express.static(path.join(__dirname, '/public')));
 // -----------------------------------
 
@@ -129,8 +147,3 @@ app.use(function (err, req, res, next) {
        res.status(500);
        res.send('500 — Ошибка сервера');
 });
-
-// app.listen(app.get('port'), function () {
-//    console.log('Express запущен на http://localhost:' +
-//      app.get('port') + '; нажмите Ctrl+C для завершения.');
-// });
