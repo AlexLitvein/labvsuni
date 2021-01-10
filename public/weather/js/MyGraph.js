@@ -240,3 +240,5 @@ function MyGraph (context, x, y, width, height) {
     }
     return obj;
 }
+
+// export default MyGraph
