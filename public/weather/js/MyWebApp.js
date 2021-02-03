@@ -6,6 +6,7 @@ function MyWebApp (bodyElm) {
     let mArrDbData = null;
     // const mGraph = new Mg($('canvas')[0].getContext('2d'), 30, 30, 720, 720);
      const mGraph = new MyGraph($('canvas')[0].getContext('2d'), 30, 30, 720, 720);
+    // const mychat1 = new chat('panR');
     // const viscnt = new VisiterCounter();
     const mCookie = new CookiesMy();
 
@@ -64,6 +65,8 @@ function MyWebApp (bodyElm) {
             if (initialized) {
                 return;
             }
+
+            //
 
             // document.onmousemove = function (e) {
             //     curx = e.pageX;

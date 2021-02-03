@@ -8,6 +8,9 @@ function DataCollector () {
         function (err, gDB) {
             if (err) throw err;
             const dbo = gDB.db('SensDb');
+            // проверяем есть ли коллекция currSensData, если нет, то создаем  ее именно
+            // здесь тк она "ограниченная" ("ограниченные" коллекции не создаются во
+            // время запроса)
             dbo.listCollections({ name: 'currSensData' }).toArray(function (err, collections) {
                 if (err) throw err;
                 if (collections.length === 0) {

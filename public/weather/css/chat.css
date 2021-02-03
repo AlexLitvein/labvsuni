@@ -1,0 +1,96 @@
+.myChatComm{
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+div{
+    border: 1px solid FireBrick;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.chatText{
+    margin: 4px;
+}
+
+/* .defCont{
+    overflow-x: hidden;
+    overflow-y: auto;
+} */
+
+.lgndImg16{      
+    height: 16px;
+    width: 16px; 
+    background: url('/weather/img/nIcon-02.png');
+}
+
+.flx{
+    display: flex;
+}  
+
+.flexCol {
+    display: flex;
+    flex-direction: column;
+}
+
+.flxCentH{
+    display: flex;
+    align-items: center;
+}  
+
+.flxGrw {
+    display: flex;
+    flex-grow: 1;
+}
+
+.flxGrwCol {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+}    
+
+.flxItCnt{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flxItCntGrw{
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+.popUpDialog{
+    background-color: aquamarine;
+    opacity: 0.5;
+    position:absolute;
+    width: 100%;
+    height: 100%;
+}
+    
+/* .imgSprite {
+    background: 'url("nIcon-02.png")';
+} */
+
+.btnInit{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color:lightblue;
+    border-width: 2px;
+    border-radius: 5px;
+    border-color: #C4B8FF;
+    margin: 1px;
+    user-select: none;
+}
+
+.btnInit:hover{
+    background-color:green;
+}
+
+.btnInit:active{
+    transform: translateY(1px);
+}

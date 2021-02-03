@@ -2,43 +2,56 @@ const fs = require('fs');
 const https = require('https');
 const express = require('express');
 const exphbs = require('express-handlebars');
-const  morgan  =  require('morgan');
+const morgan = require('morgan');
 const path = require('path');
 const dataColl = new (require('./comjs/ISensDataDB_v1.0'))();
+const chat = new (require('./comjs/chat_be_01'))();
 const visitCount = new (require('./comjs/helpers_be')).VisiterCounter();
-const favicon  =  require('serve-favicon');
+const favicon = require('serve-favicon');
 const rfs = require('rotating-file-stream'); // version 2.x
 const cron = require('node-cron'); // npm install cron , npm install --save node-cron
 
 // ---------------------------------------
+const myAct = {
+  regFunc: function (name, f) { this[name] = f; },
 
-// const hostname = 'exampledomain.com'; const port = 443;
-const httpsOptions = {
-  cert: fs.readFileSync('./ssl/certificate.crt'),
-  ca: fs.readFileSync('./ssl/ca_bundle.crt'),
-  key: fs.readFileSync('./ssl/private.key')
+  callFunc: function (response, name, params) {
+    const fu = myAct[name];
+    if (fu) {
+      console.log(name + ' ' + params);
+      const res = fu(params);
+      response.json(res);
+    }
+  }
 };
 
+myAct.regFunc('AddMsgz08Kw4fu', chat.AddMsg);
+myAct.regFunc('GetMsgzd08Khw4fu', chat.GetMsg);
+
+// ---------------------------------------
 const app = express();
-app.set('port', 443);
 app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }));
 app.set('view engine', 'hbs');
-
-const httpsServer = https.createServer(httpsOptions, app);
-httpsServer.listen(app.get('port'), function () {
-      console.log('Express запущен на localhost:' +
-        app.get('port') + '; нажмите Ctrl+C для завершения.');
-   });
-// -------------------------
-// const app = express();
-// app.set('port', 80);
-
-// // return Class: net.Server
-// app.listen(app.get('port'), function () {
-//     console.log('Express запущен на localhost:' +
-//       app.get('port') + '; нажмите Ctrl+C для завершения.');
-//  });
-// --------------------------------------
+// ---------HTTPS----------------
+// const httpsOptions = {
+//   cert: fs.readFileSync('./ssl/certificate.crt'),
+//   ca: fs.readFileSync('./ssl/ca_bundle.crt'),
+//   key: fs.readFileSync('./ssl/private.key')
+// };
+// app.set('port', 443);
+// const httpsServer = https.createServer(httpsOptions, app);
+// httpsServer.listen(app.get('port'), function () {
+//       console.log('Express запущен на localhost:' +
+//         app.get('port') + '; нажмите Ctrl+C для завершения.');
+//    });
+// ---------EndHTTPS----------------
+// ---------HTTP----------------
+app.set('port', 80);
+app.listen(app.get('port'), function () { // return Class: net.Server
+  console.log('Express запущен на localhost:' +
+    app.get('port') + '; нажмите Ctrl+C для завершения.');
+});
+// ---------EndHTTP----------------
 // ┌────────────── second (optional)
 // │ ┌──────────── minute
 // │ │ ┌────────── hour
@@ -46,76 +59,64 @@ httpsServer.listen(app.get('port'), function () {
 // │ │ │ │ ┌────── month
 // │ │ │ │ │ ┌──── day of week
 // * * * * * *
-const task = cron.schedule('* */24 * * *', () =>  { // '0 */1 * * *'
-    // console.log('boom!');
-    // console.log(visitCount.GetName());
-    const dataIn = {
-      d: new Date(),
-      count: visitCount.GetCount()
-    };
-    dataColl.AddAnyOneData('statistic', 'visit', dataIn);
-    visitCount.Reset();
-  }, {
-    scheduled: true, timezone: 'Asia/Novosibirsk'
-  });
-  task.start();
-  // task.stop();
+const task = cron.schedule('* */24 * * *', () => { // '0 */1 * * *'
+  // console.log('boom!');
+  // console.log(visitCount.GetName());
+  const dataIn = {
+    d: new Date(),
+    count: visitCount.GetCount()
+  };
+  dataColl.AddAnyOneData('statistic', 'visit', dataIn);
+  visitCount.Reset();
+}, {
+  scheduled: true, timezone: 'Asia/Novosibirsk'
+});
+task.start();
+// task.stop();
 // --------------------------------------
 
 // --------------------------------------
 // create a rotating write stream
 const accessLogStream = rfs.createStream('access.log', {
-    interval: '1d', // rotate daily
-    path: path.join(__dirname, 'log')
-  });
+  interval: '1d', // rotate daily
+  path: path.join(__dirname, 'log')
+});
 
 // -------------------------
-
- // -----------------------
-//  const socketio = require('socket.io')(server);
-//  let count = 0
-//  socketio.on('connection', function (client) {
-//      count++;
-//      console.log('count %d', count);
-//      // client.broadcast({ count: count })
-//      client.on('disconnect', function () {
-//          count--;
-//          console.log('count %d', count);
-//      })
-//  })
-// -----------------------
-//  server.on('connection', function name (params) {
-//     console.log('connection *');
-//  });
-
 // Первый!!!!
 app.use(morgan('combined', {
-    stream: accessLogStream,
-    skip: function (req, res) {
-        return req.url !== '/weather';
-    }
-  }));
+  stream: accessLogStream,
+  skip: function (req, res) {
+    return req.url !== '/weather';
+  }
+}));
 
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(express.static(path.join(__dirname, '/public')));
 // -----------------------------------
 
-app.get('/', function (req, res) {
-       res.sendFile(path.join(__dirname, '/index.html'));
-   });
+// app.get('/', function (req, res) {
+//   res.sendFile(path.join(__dirname, '/index.html'));
+// });
+
+app.post('/weather/chat', function (req, res) {
+  const fName = req.body.func;
+  const params = req.body.params;
+  myAct.callFunc(res, fName, params);
+});
 
 app.post('/weather/getSensData', function (req, res) {
-    const date = new Date(req.body.startData);
-    // const toffs =  date.getTimezoneOffset();
-    // date.setHours(-toffs / 60);
-    date.setHours(0);
-    const range = parseInt(req.body.range);
-    // console.log('req data: %s %d', date, range);
-    // const date = new Date();
-    const collName = 'sensData_' + date.getFullYear();
-    // TODO: имя коллекции от года в запросе
-    dataColl.GetSensData(collName, date, range, res);
+  const date = new Date(req.body.startData);
+  // const toffs =  date.getTimezoneOffset();
+  // date.setHours(-toffs / 60);
+  date.setHours(0);
+  const range = parseInt(req.body.range);
+  // console.log('req data: %s %d', date, range);
+  // const date = new Date();
+  const collName = 'sensData_' + date.getFullYear();
+  // TODO: имя коллекции от года в запросе
+  dataColl.GetSensData(collName, date, range, res);
 });
 
 app.post('/weather/getCurrSensData', function (req, res) {
@@ -136,14 +137,14 @@ app.get('/weather', function (req, res) {
 });
 
 app.use(function (req, res) {
-       res.type('text/plain');
-       res.status(404);
-       res.send('404 — Не найдено');
+  res.type('text/plain');
+  res.status(404);
+  res.send('404 — Не найдено');
 });
 
 app.use(function (err, req, res, next) {
-       console.error(err.stack);
-       res.type('text/plain');
-       res.status(500);
-       res.send('500 — Ошибка сервера');
+  console.error(err.stack);
+  res.type('text/plain');
+  res.status(500);
+  res.send('500 — Ошибка сервера');
 });

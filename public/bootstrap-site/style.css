@@ -1,0 +1,19 @@
+.my-text{
+    color: aliceblue;
+    text-decoration: none;
+    padding-left: .5rem;
+    display: block;
+    padding: .5rem 1rem;
+}
+
+.my-bkg{
+    background-color: black;
+}
+
+.my-header{
+    top:10px;
+}
+
+.my-indicator{
+    top:10px;
+}
