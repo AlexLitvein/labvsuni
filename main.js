@@ -15,18 +15,23 @@ const cron = require('node-cron'); // npm install cron , npm install --save node
 const myAct = {
   regFunc: function (name, f) { this[name] = f; },
 
-  callFunc: function (response, name, params) {
-    const fu = myAct[name];
-    if (fu) {
-      console.log(name + ' ' + params);
-      const res = fu(params);
-      response.json(res);
+  callFunc: async function (response, name, params) {
+    try {
+      const fu = myAct[name];
+      if (fu) {
+        console.log(`myAct ${name} ${params}`);
+        const res = await fu(params);
+        response.json(res);
+      }
+    } catch (e) {
+      response.json(e);
     }
   }
 };
 
 myAct.regFunc('AddMsgz08Kw4fu', chat.AddMsg);
 myAct.regFunc('GetMsgzd08Khw4fu', chat.GetMsg);
+myAct.regFunc('UserRegzd08hvlKhwfu', chat.UserReg);
 
 // ---------------------------------------
 const app = express();
@@ -92,28 +97,25 @@ app.use(morgan('combined', {
 }));
 
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(express.static(path.join(__dirname, '/public')));
 // -----------------------------------
 
-// app.get('/', function (req, res) {
-//   res.sendFile(path.join(__dirname, '/index.html'));
-// });
-
 app.post('/weather/chat', function (req, res) {
-  const fName = req.body.func;
+  const fName = req.body.f;
   const params = req.body.params;
   myAct.callFunc(res, fName, params);
+
+  // temp
+  // console.log('app.post: ' + fName + ' ' + params[0]);
+  // res.json('ok');
 });
 
 app.post('/weather/getSensData', function (req, res) {
   const date = new Date(req.body.startData);
-  // const toffs =  date.getTimezoneOffset();
-  // date.setHours(-toffs / 60);
   date.setHours(0);
   const range = parseInt(req.body.range);
-  // console.log('req data: %s %d', date, range);
-  // const date = new Date();
   const collName = 'sensData_' + date.getFullYear();
   // TODO: имя коллекции от года в запросе
   dataColl.GetSensData(collName, date, range, res);
@@ -122,11 +124,6 @@ app.post('/weather/getSensData', function (req, res) {
 app.post('/weather/getCurrSensData', function (req, res) {
   dataColl.GetCurrSensData(res);
 });
-
-// app.get('/weather', function (req, res) {
-//     res.sendFile(path.join(__dirname, '/weather/index.html'));
-//     // console.log('weather');
-// });
 
 app.get('/weather', function (req, res) {
   // res.render(path.join(__dirname, './weather/views/layouts/main.hbs'));

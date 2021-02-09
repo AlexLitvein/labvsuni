@@ -1,6 +1,6 @@
 function UIElms (oStyles) {
     const self = this;
-    const styles = oStyles;
+    // const styles = oStyles;
 
     this.UICreateMany = function (arrPrms, constr) {
         const arrOut = [];
@@ -11,32 +11,34 @@ function UIElms (oStyles) {
         return arrOut;
     }
 
-    this.UICreateRows = function (clsCss) {
-        const arrOut = [];
-        for (let y = 1; y < arguments.length; y += 2) {
-            // const h = arguments[y];
-            const mdiv = new this.UICont('row-' + y, clsCss, arguments[y], arguments[y + 1]);
-            arrOut.push(mdiv);
-        }
-        return arrOut;
+    // this.UICreateContainers = function (name, clsCss) {
+    //     const arrOut = [];
+    //     for (let y = 2; y < arguments.length; y += 2) {
+    //         // const h = arguments[y];
+    //         const mdiv = new this.UICont(name + y, clsCss, arguments[y], arguments[y + 1]);
+    //         arrOut.push(mdiv);
+    //     }
+    //     return arrOut;
+    // }
+
+    this.UICreateElement = function (tag, text = '', clsCss = '') {
+        const elm = document.createElement(tag);
+        if (text) elm.innerText = text;
+        if (clsCss) elm.className = clsCss;
+        return elm;
     }
 
     const UIProto = {
         addElm: function () {
             for (let y = 0; y < arguments.length; y++) {
                 const elm = arguments[y];
-                this[elm.name()] = elm;
-                this.elm().appendChild(elm.elm());
+                if (elm.name) {
+                    this[elm.name()] = elm;
+                    this.elm().appendChild(elm.elm());
+                } else { this.elm().appendChild(elm); }
             }
         },
-        // setStyle: function () {
-        //     for (let y = 0; y < arguments.length; y++) {
-        //         const arr = arguments[y];
-        //         for (let i = 0; i < arr.length;) {
-        //             this.elm().style[arr[i]] = arr[++i];
-        //         }
-        //     }
-        // }
+
         setClass: function (classesNames) {
             if (classesNames) this.elm().className = classesNames;
         }
@@ -59,25 +61,19 @@ function UIElms (oStyles) {
     }
     this.UICont.prototype = UIProto;
 
-    this.UILegendItem = function (name, text, clsName, h, offsX, offsY) {
-        const uiCont = new self.UICont(name, clsName);
+    this.UILegendItem = function (name, text, clsName, offsX = 0, offsY = 0) {
+        const uiCont = new self.UICont(name, 'flxCentH');
         this.name = () => uiCont.name();
         this.elm = () => uiCont.elm();
 
         const legImg = document.createElement('image');
-        legImg.className = 'lgndImg16';
-        // this.setClass('lgndImg16');
-        // legImg.src = '/weather/img/1x1.png';
-        // legImg.style.height = legImg.style.width = h;
-        // legImg.style.background = 'url("/weather/img/nIcon-02.png")';
+        legImg.className = clsName;
         legImg.style.backgroundPositionX = offsX;
         legImg.style.backgroundPositionY = offsY;
-        this.elm().appendChild(legImg);
-        // helm.appendChild(this.legImg);
-        // helm.insertBefore(this.legImg, helm.firstChild);
+        uiCont.addElm(legImg);
         const txt = document.createElement('span');
         txt.innerText = text;
-        this.elm().appendChild(txt);
+        uiCont.addElm(txt);
     }
     this.UILegendItem.prototype = UIProto;
 
@@ -88,7 +84,7 @@ function UIElms (oStyles) {
 
         const img = document.createElement('img');
         img.src = url;
-        uiCont.elm().appendChild(img);
+        uiCont.addElm(img);
     }
     this.UIImage.prototype = UIProto;
 
@@ -106,23 +102,40 @@ function UIElms (oStyles) {
 
         const txt = document.createElement('span');
         txt.innerText = text;
-        uiCont.elm().appendChild(txt);
+        uiCont.addElm(txt);
     }
     this.UITextButton.prototype = UIProto;
 
-    this.UIImgButton = function (name, clsName, url, h, w, offsX, offsY) {
-        const uiCont = new self.UICont(name, clsName, h, w);
+    this.UIImgButton = function (name, clsName, offsX = 0, offsY = 0) {
+        const uiCont = new self.UICont(name, clsName);
         this.name = () => uiCont.name();
         this.elm = () => uiCont.elm();
 
-        // this.elm().style.background = url;
-        this.elm().style.backgroundPositionX = offsX;
-        this.elm().style.backgroundPositionY = offsY;
-        // cont.elm().appendChild(legImg);
-
-        // const txt = document.createElement('span');
-        // txt.innerText = '9999';
-        // cont.elm().appendChild(txt);
+        const img = document.createElement('image');
+        img.className = 'buttImg16';
+        img.style.backgroundPositionX = offsX;
+        img.style.backgroundPositionY = offsY;
+        uiCont.addElm(img);
     }
     this.UIImgButton.prototype = UIProto;
+
+    this.UITextEditValid = function (name, label, title, offsX = 0, offsY = 0) {
+        const uiCont = new self.UICont(name, 'flxCentH jstfItEnd');
+        this.name = () => uiCont.name();
+        this.elm = () => uiCont.elm();
+
+        const lab = self.UICreateElement('span', label);
+        const inp = document.createElement('input');
+        inp.className = 'myInput';
+        inp.setAttribute('type', 'text');
+
+        const img = document.createElement('image');
+        img.className = 'buttImg16';
+        img.style.backgroundPositionX = offsX;
+        img.style.backgroundPositionY = offsY;
+        if (title) img.title = title;
+
+        uiCont.addElm(lab, inp, img);
+    }
+    this.UITextEditValid.prototype = UIProto;
 }

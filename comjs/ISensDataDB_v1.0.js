@@ -1,4 +1,6 @@
 const MongoClient = require('mongodb').MongoClient; // npm install --save mongodb
+// const  {  MongoClient,  ObjectID  }  =  require('mongodb');
+// let   db;
 
 function DataCollector () {
     const url = 'mongodb://127.0.0.1:27017';

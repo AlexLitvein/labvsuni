@@ -1,5 +1,7 @@
 (function  (idParent) {
-    loadFile('/weather/css/chat.css', 'css');
+    // loadFile('/weather/css/chat.css', 'css');
+    loadFile('weather/css/chat.css', 'css');  // for offline
+
     // loadFile('/weather/js/MyStyles.js', 'js');
     // loadFile('/weather/js/UIElements.js', 'js');
 
@@ -42,9 +44,9 @@
         rPan.addElm(rPanTop, rPanMid, rPanBot);
 
         const prmLegnd = [];
-        prmLegnd.push(['lg1', '8888', 'flxItCntGrw', '16px', '0px', '0px']);
-        prmLegnd.push(['lg2', '9999', 'flxItCntGrw', '16px', '16px', '0px']);
-        prmLegnd.push(['lg3', '9999', 'flxItCntGrw', '16px', '32px', '0px']);
+        prmLegnd.push(['lg1', '8888', 'lgndImg16']);
+        prmLegnd.push(['lg2', '9999', 'lgndImg16', '16px', '0px']);
+        prmLegnd.push(['lg3', '9999', 'lgndImg16', '32px', '0px']);
         // prmLegnd.push(['lg4', '9999', 'flxItCntGrw', '16px', '48px', '0px']);
         const lgnds = uie.UICreateMany(prmLegnd, uie.UILegendItem);
         rPanBot.addElm(...lgnds);
@@ -56,28 +58,58 @@
     function createMenu (name) {
         const cont = new uie.UICont(name, 'flxGrw', '32px');
 
-        const ibut1 = new uie.UITextButton('ibut1', 'New', 'btnInit', '', '52px');
-        const ibut2 = new uie.UITextButton('ibut2', 'New', 'btnInit', '', '52px');
+        const ibut1 = new uie.UITextButton('ibut1', 'Add', 'btnInit', '', '52px');
+        const ibut2 = new uie.UITextButton('ibut2', 'Reg', 'btnInit', '', '52px');
         cont.addElm(ibut1, ibut2);
 
-        ibut1.elm().addEventListener('click', function () {
-            const body = 'func=' + 'AddMsgz08Kw4fu' + '&params=' + encodeURIComponent('New message');
-            // 'startData=' + encodeURIComponent('New message') + '&range=' + encodeURIComponent(range);
-            const xhr = new XMLHttpRequest();
-            xhr.timeout = 3000; // (в миллисекундах)
-            xhr.open('POST', '/weather/chat', true); // true – асинхронно
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.send(body);
+        ibut1.elm().addEventListener('click', async function () {
+        const response = await fetch('/weather/chat', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json;charset=utf-8'
+            },
+            // body: JSON.stringify({ func: 'AddMsgz08Kw4fu', param: 'New message' })
+            body: JSON.stringify({ f: 'AddMsgz08Kw4fu', params: ['userLogin', 'New message'] })
+          });
 
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    const data = JSON.parse(this.responseText);
-                    if (data.length !== 0) {
-                        console.log('onreadystatechange: ' + data);
-                    }
-                }
-            }
+          const result = await response.json();
+          console.log('xmlreq: ' + result);
         });
+
+        ibut2.elm().addEventListener('click', async function () {
+            const response = await fetch('/weather/chat', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json;charset=utf-8'
+                },
+                // body: JSON.stringify({ func: 'AddMsgz08Kw4fu', param: 'New message' })
+                body: JSON.stringify({ f: 'UserRegzd08hvlKhwfu', params: ['userLogin', 'password'] })
+              });
+
+              const result = await response.json();
+              console.log('xmlreq: ' + result);
+            });
+
+        // ibut1.elm().addEventListener('click', function () {
+        //     const body = 'func=' + 'AddMsgz08Kw4fu' + '&params=' + encodeURIComponent('New message');
+        //     // 'startData=' + encodeURIComponent('New message') + '&range=' + encodeURIComponent(range);
+        //     const xhr = new XMLHttpRequest();
+        //     // xhr.timeout = 6000; // (в миллисекундах) не нужно
+        //     xhr.open('POST', '/weather/chat', true); // true – асинхронно
+        //     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        //     xhr.send(body);
+        //     xhr.onreadystatechange = function () {
+        //         if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+        //             const data = JSON.parse(this.responseText);
+        //             if (data.length !== 0) {
+        //                 console.log('onreadystatechange: ' + data);
+        //             }
+        //         }
+        //     }
+        //     xhr.ontimeout = function () {
+        //         alert('Извините, запрос превысил максимальное время');
+        //       }
+        // });
 
         return cont;
     }
@@ -90,12 +122,14 @@
         const pSender = document.createElement('p');
         pSender.className = 'chatText';
         pSender.innerText = 'Sender: ' + uid;
-        sender.elm().appendChild(pSender);
+        // sender.elm().appendChild(pSender);
+        sender.addElm(pSender);
 
         const p = document.createElement('p');
         p.className = 'chatText';
         p.innerText = msg;
-        cont.elm().appendChild(p);
+        // cont.elm().appendChild(p);
+        cont.addElm(p);
 
         return cont;
     }
@@ -109,7 +143,8 @@
         const textBox = document.createElement('textarea');
         textBox.style.minHeight = h;
         textBox.className = 'flxGrw';
-        inputMsg.elm().appendChild(textBox);
+        // inputMsg.elm().appendChild(textBox);
+        inputMsg.addElm(textBox);
         const inputButt = new uie.UITextButton('inputButt', 'OK', 'btnInit', h, h);
         inputMsg.addElm(inputButt);
         cont.addElm(inputMsg);
@@ -121,12 +156,50 @@
         return cont;
     }
 
-    function createDialog (params) {
-        const popUpCont = new uie.UICont('popUpCont', 'flxItCnt popUpDialog');
+    function createRegForm (caption) {
+        const cont = new uie.UICont('contForm', 'dlgForm');
 
-        const rows = uie.UICreateRows('flxCentH', '10px', '100px', '10px', '100px', '10px', '100px');
-        popUpCont.addElm(...rows);
-        return popUpCont;
+        // const labelLogin = uie.UICreateElement('span', 'Логин');
+        // const inputLogin = document.createElement('input');
+        // inputLogin.setAttribute('type', 'text');
+        // cont.addElm(labelLogin, inputLogin);
+
+        // const labelPass = uie.UICreateElement('span', 'Пароль');
+        // const inputPass = document.createElement('input');
+        // inputLogin.setAttribute('type', 'text');
+        // cont.addElm(labelPass, inputPass);
+
+        const login = new uie.UITextEditValid('login', 'Логин', '3-5 символов русского, латинского алфавита, цифры');
+        const passw = new uie.UITextEditValid('passw', 'Пароль', '3-5 символов латинского алфавита, цифры');
+        cont.addElm(login, passw);
+
+        return cont;
+    }
+
+    function createCaptionPan (caption) {
+        const cont = new uie.UICont('contCapt', 'captPan');
+        const ico = new uie.UILegendItem('ico', caption, 'lgndImg16', '16px');
+        cont.addElm(ico);
+        const rButt = new uie.UIImgButton('rButt', 'btnInit', '-17px');
+        cont.addElm(rButt);
+        return cont;
+    }
+
+    function createDialog (params) {
+        const popUpBody = new uie.UICont('popUpBody', 'popUpBody flxItCnt');
+        const popUpCont = new uie.UICont('popUpCont', 'dialogCont');
+        popUpBody.addElm(popUpCont);
+
+        const capt = createCaptionPan('Hello! Caption!');
+        const regForm = createRegForm();
+
+        const buttPan = new uie.UICont('buttPan', 'flxItCnt');
+        const butOk = new uie.UITextButton('butOk', 'Ок', 'btnInit', '', '52px');
+        const butCancel = new uie.UITextButton('butCancel', 'Отмена', 'btnInit', '', '52px');
+        buttPan.addElm(butOk, butCancel);
+
+        popUpCont.addElm(capt, regForm, buttPan);
+        return popUpBody;
     }
 
     function ititUI () {
@@ -149,8 +222,8 @@
         const msgInput = createMsgPan('32px');
         rPan.addElm(msgInput);
 
-        const dia = createDialog();
-        bodyElm.addElm(dia);
+        // const dia = createDialog();
+        // bodyElm.addElm(dia);
 
         // console.log(rPan);
         // const ibut1 = new uie.UIImgButton('ibut1', myStyles.brd1, 'url("avat_03.png")', '32px', '32px', '0px', '0px');
