@@ -1,5 +1,4 @@
 const { IDB_My } = require('./IMongo');
-// const IDB_My = require('./IMongo').IDB_My;
 
 function MyChat () {
     // const url = 'mongodb://127.0.0.1:27017';
@@ -22,14 +21,14 @@ function MyChat () {
         if (checkLogin(params[0]) !== 0) throw ('Bad login');
         // if (this.checkPassw(password) !== 0) throw('Bad password');
 
-        const collName = getMsgsCollName();
-        const find = await db.isExist(collName, { login: { $eq: params[0] } });
+        // const collName = getMsgsCollName();
+        const find = await db.isExist(collUser, { login: { $eq: params[0] } });
 
         // TODO: temp
         console.log(find);
 
         if (find !== null) throw ('User existing');
-        const res = await db.create(collName, { login: params[0], pass: params[1] });
+        const res = await db.create(collUser, { login: params[0], pass: params[1] });
         return res; // res.then(p=>{});
     }
 

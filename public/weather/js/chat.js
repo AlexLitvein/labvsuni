@@ -1,20 +1,28 @@
-(function  (idParent) {
+(function (idParent) {
     // loadFile('/weather/css/chat.css', 'css');
     loadFile('weather/css/chat.css', 'css');  // for offline
 
     // loadFile('/weather/js/MyStyles.js', 'js');
     // loadFile('/weather/js/UIElements.js', 'js');
 
-    const prntElm = document.getElementById('cont');
+    const topParent = document.getElementById('cont');
     // console.log('MyStyles');
     const uie = new UIElms();
     const controls = Object.create(null, {});
 
     ititUI();
 
-    function addControl (child) {
-        controls[child.name] = child;
+    function addCtrl (uiName) {
+        controls[uiName.name()] = uiName;
+        // console.log(child.name());
+        // console.log(controls);
         // parentEl.appendChild(child.elm());
+    }
+    function remCtrl (uiName) {
+        const elm = controls[uiName];
+        const prnt = elm.elm().parentElement;
+        prnt.removeChild(elm.elm());
+        delete controls.uiName;
     }
 
     function loadFile (path, type) {
@@ -35,7 +43,7 @@
 
     function createUser (name) {
         const cont = new uie.UICont(name, 'flxGrw', '80px');
-        const lPan = new uie.UIImage('lPan', 'flxItCnt', '/weather/img/avat_01.png');
+        const lPan = new uie.UIImage('lPan', 'flxCnt', '/weather/img/avat_01.png');
         const rPan = new uie.UICont('rPan', 'flxGrwCol');
 
         const rPanTop = new uie.UICont('rPanTop', 'flx', '16px');
@@ -47,7 +55,7 @@
         prmLegnd.push(['lg1', '8888', 'lgndImg16']);
         prmLegnd.push(['lg2', '9999', 'lgndImg16', '16px', '0px']);
         prmLegnd.push(['lg3', '9999', 'lgndImg16', '32px', '0px']);
-        // prmLegnd.push(['lg4', '9999', 'flxItCntGrw', '16px', '48px', '0px']);
+        // prmLegnd.push(['lg4', '9999', 'flxCntGrw', '16px', '48px', '0px']);
         const lgnds = uie.UICreateMany(prmLegnd, uie.UILegendItem);
         rPanBot.addElm(...lgnds);
 
@@ -63,53 +71,21 @@
         cont.addElm(ibut1, ibut2);
 
         ibut1.elm().addEventListener('click', async function () {
-        const response = await fetch('/weather/chat', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json;charset=utf-8'
-            },
-            // body: JSON.stringify({ func: 'AddMsgz08Kw4fu', param: 'New message' })
-            body: JSON.stringify({ f: 'AddMsgz08Kw4fu', params: ['userLogin', 'New message'] })
-          });
+            const dia = createDialog();
+            controls.body.addElm(dia);
+            addCtrl(dia);
 
-          const result = await response.json();
-          console.log('xmlreq: ' + result);
+            // const response = await fetch('/weather/chat', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json;charset=utf-8' },
+            //     body: JSON.stringify({ f: 'AddMsgz08Kw4fu', params: ['userLogin', 'New message'] })
+            // });
+
+            // const result = await response.json();
+            // console.log('xmlreq: ' + result);
         });
 
-        ibut2.elm().addEventListener('click', async function () {
-            const response = await fetch('/weather/chat', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json;charset=utf-8'
-                },
-                // body: JSON.stringify({ func: 'AddMsgz08Kw4fu', param: 'New message' })
-                body: JSON.stringify({ f: 'UserRegzd08hvlKhwfu', params: ['userLogin', 'password'] })
-              });
-
-              const result = await response.json();
-              console.log('xmlreq: ' + result);
-            });
-
-        // ibut1.elm().addEventListener('click', function () {
-        //     const body = 'func=' + 'AddMsgz08Kw4fu' + '&params=' + encodeURIComponent('New message');
-        //     // 'startData=' + encodeURIComponent('New message') + '&range=' + encodeURIComponent(range);
-        //     const xhr = new XMLHttpRequest();
-        //     // xhr.timeout = 6000; // (в миллисекундах) не нужно
-        //     xhr.open('POST', '/weather/chat', true); // true – асинхронно
-        //     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        //     xhr.send(body);
-        //     xhr.onreadystatechange = function () {
-        //         if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-        //             const data = JSON.parse(this.responseText);
-        //             if (data.length !== 0) {
-        //                 console.log('onreadystatechange: ' + data);
-        //             }
-        //         }
-        //     }
-        //     xhr.ontimeout = function () {
-        //         alert('Извините, запрос превысил максимальное время');
-        //       }
-        // });
+        uie.addReq(ibut2, 'click', '/weather/chat', { f: 'UserRegzd08hvlKhwfu', params: ['userLogin', 'password'] }, res => { console.log('xmlreq: ' + res); })
 
         return cont;
     }
@@ -150,28 +126,49 @@
         cont.addElm(inputMsg);
 
         // temp
-        const outMsg  = outMsg1(7878, 'В первые годы после появления язык JavaScript чаще всего использовался для создания маленьких и простых сценариев, встроенных прямо в вебстраницы.');
+        const outMsg = outMsg1(7878, 'В первые годы после появления язык JavaScript чаще всего использовался для создания маленьких и простых сценариев, встроенных прямо в вебстраницы.');
         chatArea.addElm(outMsg);
 
         return cont;
     }
 
-    function createRegForm (caption) {
-        const cont = new uie.UICont('contForm', 'dlgForm');
-
-        // const labelLogin = uie.UICreateElement('span', 'Логин');
-        // const inputLogin = document.createElement('input');
-        // inputLogin.setAttribute('type', 'text');
-        // cont.addElm(labelLogin, inputLogin);
-
-        // const labelPass = uie.UICreateElement('span', 'Пароль');
-        // const inputPass = document.createElement('input');
-        // inputLogin.setAttribute('type', 'text');
-        // cont.addElm(labelPass, inputPass);
+    function createRegForm () {
+        const cont = new uie.UICont('contRegForm', ' tranOpac'); // posAbs
+        cont.elm().style.visibility = 'visible'; // для функции скрытия
 
         const login = new uie.UITextEditValid('login', 'Логин', '3-5 символов русского, латинского алфавита, цифры');
+
+        // uie.addReq(login.inp, 'click', '/weather/chat', { f: 'UserRegzd08hvlKhwfu', params: ['userLogin', 'password'] }, res => { login.inp.value = res; })
+
+        const passw1 = new uie.UITextEditValid('passw1', 'Пароль', '3-5 символов латинского алфавита, цифры');
+
+        const passw2 = new uie.UITextEditValid('passw2', 'Пароль ещё раз', '3-5 символов латинского алфавита, цифры');
+        cont.addElm(login, passw1, passw2);
+
+        return cont;
+    }
+
+    function createLoginForm () {
+        // const cont = new uie.UICont('contLogForm', 'posAbs tranOpac');
+        const cont = new uie.UIForm('logForm', 'posAbs tranOpac');
+        cont.elm().style.visibility = 'visible'; // для функции скрытия
+
+        const login = new uie.UITextEditValid('login', 'Логин', '3-5 символов русского, латинского алфавита, цифры');
+
+        // uie.addReq(login.inp, 'click', '/weather/chat', { f: 'UserRegzd08hvlKhwfu', params: ['userLogin', 'password'] }, res => { login.inp.value = res; })
+
         const passw = new uie.UITextEditValid('passw', 'Пароль', '3-5 символов латинского алфавита, цифры');
         cont.addElm(login, passw);
+        return cont;
+    }
+
+    function creaWaitForm (text) {
+        // const img = new uie.UIImage('waitImg', 'posAbs tranOpac anim', '/weather/img/avat_01.png');
+        // img.elm().style.visibility = 'hidden'; // для функции скрытия
+
+        // const msg = uie.UICreateElement('span', '', text);
+        // img.addElm(msg);
+        const cont = new uie.UIWaitMsg('wait1', 'lgndImg16', text);
 
         return cont;
     }
@@ -180,32 +177,62 @@
         const cont = new uie.UICont('contCapt', 'captPan');
         const ico = new uie.UILegendItem('ico', caption, 'lgndImg16', '16px');
         cont.addElm(ico);
-        const rButt = new uie.UIImgButton('rButt', 'btnInit', '-17px');
-        cont.addElm(rButt);
+        const rButt1 = new uie.UIImgButton('rButt1', 'btnInit', '-17px');
+        const rButt2 = new uie.UIImgButton('rButt2', 'btnInit', '-17px');
+
+        rButt2.elm().addEventListener('click', function () {
+            remCtrl('logRegDlg');
+        });
+
+        cont.addElm(rButt1, rButt2);
         return cont;
     }
 
     function createDialog (params) {
-        const popUpBody = new uie.UICont('popUpBody', 'popUpBody flxItCnt');
-        const popUpCont = new uie.UICont('popUpCont', 'dialogCont');
-        popUpBody.addElm(popUpCont);
+        const cont = new uie.UICont('logRegDlg', 'popUpBgd flxCnt'); // фоновый контейнер
+        const popUpCont = new uie.UICont('popUpCont', 'flxColCntH bkg'); // dlg
+        cont.addElm(popUpCont);
 
         const capt = createCaptionPan('Hello! Caption!');
-        const regForm = createRegForm();
 
-        const buttPan = new uie.UICont('buttPan', 'flxItCnt');
+        // NOTE: тело диалога подстраивается под размер содержимого, но тк содержимое с
+        // абсолютной позиц, то тело схлопываетя в 0. По этому делаем контейнер
+        // (с самым большим содержимым) с обычныой позицией и скрываем его если надо,
+        // остальные с абсолютной
+        const dlgBodyCont = new uie.UICont('dlgBodyCont', 'flxCntGrw posRel');  // dlgBody
+        const logForm = createLoginForm();
+        const regForm = createRegForm();
+        const waitImg = creaWaitForm('Waiting...');
+        regForm.tglVis();
+        // waitImg.tglVis();
+
+        dlgBodyCont.addElm(logForm, regForm, waitImg);
+
+        const buttPan = new uie.UICont('buttPan', 'flxCnt');
+
         const butOk = new uie.UITextButton('butOk', 'Ок', 'btnInit', '', '52px');
         const butCancel = new uie.UITextButton('butCancel', 'Отмена', 'btnInit', '', '52px');
         buttPan.addElm(butOk, butCancel);
 
-        popUpCont.addElm(capt, regForm, buttPan);
-        return popUpBody;
+        butOk.elm().addEventListener('click', function () {
+            logForm.tglVis();
+            // regForm.tglVis();
+            waitImg.tglVis();
+            waitImg.uiCont.img.toggleAnim('example');
+        });
+
+        butCancel.elm().addEventListener('click', function () {
+            remCtrl('logRegDlg');
+        });
+
+        popUpCont.addElm(capt, dlgBodyCont, buttPan);
+        return cont;
     }
 
     function ititUI () {
-        const bodyElm = new uie.UICont('body', 'myChatComm flxGrwCol', '100%');
-        prntElm.appendChild(bodyElm.elm());
-        addControl(bodyElm);
+        const bodyElm = new uie.UICont('body', 'myChatComm flexCol', '100%');
+        topParent.appendChild(bodyElm.elm());
+        addCtrl(bodyElm);
 
         const menu = createMenu('menu');
         const contUser = new uie.UICont('contUser', 'flxGrw', '100%');

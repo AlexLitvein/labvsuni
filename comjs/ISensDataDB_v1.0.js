@@ -135,7 +135,7 @@ function DataCollector () {
                         }
                     );
                 });
-                // TODO: ????
+
                 // setTimeout(function () {
                 //     gDB.close();
                 //     // console.log('db close');
