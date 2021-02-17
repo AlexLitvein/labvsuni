@@ -10,6 +10,10 @@ div{
     /* overflow-x: hidden;
     overflow-y: auto; */
 }
+
+image{
+    border: 1px dashed rgb(60, 158, 41);
+}
 input:invalid { background: rgb(228, 17, 17); } 
 input:valid { background: rgb(0, 255, 55); }   
 .chatText{
@@ -21,6 +25,24 @@ input:valid { background: rgb(0, 255, 55); }
     margin: 2px;
     background: url('/weather/img/nIcon-02.png');
 }
+
+.msgBoxImg{      
+    height: 16px;
+    width: 16px; 
+    margin: 8px;
+    background: url('/weather/img/nIcon-02.png');
+}
+
+.paddT{
+    padding-top: 10px;
+}
+
+.msgBoxHeader{ 
+    text-align: center;
+    font-size: 24px; 
+    margin: 10px 4px;
+}
+
 .sysImg16{      
     height: 16px;
     width: 16px; 
@@ -58,7 +80,13 @@ input:valid { background: rgb(0, 255, 55); }
 .flxColCntH{
     display: flex;
     flex-direction: column;
+    justify-content: center;    
+}
+.flxColCnt{
+    display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
 }
 .flxCntGrw{
     display: flex;
@@ -90,6 +118,14 @@ input:valid { background: rgb(0, 255, 55); }
     position:absolute;
     width: 100%;
     height: 100%;
+}
+
+.dlgCont{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+    padding: 10px;
 }
     
 .btnInit{
