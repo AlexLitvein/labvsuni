@@ -7,8 +7,15 @@ function MyChat () {
     const collUser = 'users';
     const collMsg = 'msgs';
 
+    function resOut (statusIn = 'Ok', dataIn = []) {
+        return { status: statusIn, data: dataIn };
+    }
+
     function checkLogin (str) {
         return str.search(/^[а-яА-Яa-zA-Z0-9]{3,10}$/);
+    }
+    function checkPassw (str) {
+        return str.search(/^[a-zA-Z0-9]{3,10}$/);
     }
 
     function getMsgsCollName () {
@@ -17,19 +24,45 @@ function MyChat () {
     }
 
     this.UserReg = async function (params) {
-        // const out = {}; // ????
-        if (checkLogin(params[0]) !== 0) throw ('Bad login');
-        // if (this.checkPassw(password) !== 0) throw('Bad password');
+        const out = resOut();
+        // if (checkLogin(params[0]) !== 0) throw ('Bad login');
+        // if (checkPassw(params[1]) !== 0) throw ('Bad password');
+        if (checkLogin(params[0]) !== 0) { out.status = 'Bad login'; return out; };
+        if (checkPassw(params[1]) !== 0) { out.status = 'Bad password'; return out; }
+        if (params[1] !== params[2]) { out.status = 'Bad confirm password'; return out; }
 
-        // const collName = getMsgsCollName();
         const find = await db.isExist(collUser, { login: { $eq: params[0] } });
 
-        // TODO: temp
-        console.log(find);
+        // console.log(`isExist? ${find}`);
 
-        if (find !== null) throw ('User existing');
+        if (find !== null) { out.status = 'User existing'; return out; }
+
         const res = await db.create(collUser, { login: params[0], pass: params[1] });
-        return res; // res.then(p=>{});
+        if (!res) out.status = 'Error while adding user';
+        else out.data.push(params[0]);
+        // console.log(out.data[0]);
+        return out;
+    }
+
+    this.UserLogin = async function (params) {
+        const out = resOut();
+        // if (checkLogin(params[0]) !== 0) throw ('Bad login');
+        // if (checkPassw(params[1]) !== 0) throw ('Bad password');
+        if (checkLogin(params[0]) !== 0) { out.status = 'Bad login'; return out; };
+        if (checkPassw(params[1]) !== 0) { out.status = 'Bad password'; return out; }
+        // if (params[1] !== params[2]) { out.status = 'Bad confirm password'; return out; }
+
+        const find = await db.isExist(collUser, { login: { $eq: params[0] } });
+
+        // console.log(`isExist? ${find}`);
+
+        if (find !== null) { out.status = 'User existing'; return out; }
+
+        const res = await db.create(collUser, { login: params[0], pass: params[1] });
+        if (!res) out.status = 'Error while adding user';
+        else out.data.push(params[0]);
+        // console.log(out.data[0]);
+        return out;
     }
 
     // this.AddMsg = function (params) {

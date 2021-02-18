@@ -66,28 +66,11 @@
 
     function createMenu (name) {
         const cont = new uie.UICont(name, 'flx', '32px');
-
         const ibut1 = new uie.UITextButton('ibut1', 'Add', 'btnInit', '', '52px');
         const ibut2 = new uie.UITextButton('ibut2', 'Reg', 'btnInit', '', '52px');
         cont.addElm(ibut1, ibut2);
 
-        ibut1.elm().addEventListener('click', function () {
-            const dia = createDialog();
-            // controls.body.addElm(dia);
-            // addCtrl(dia);
-
-            // const response = await fetch('/weather/chat', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json;charset=utf-8' },
-            //     body: JSON.stringify({ f: 'AddMsgz08Kw4fu', params: ['userLogin', 'New message'] })
-            // });
-
-            // const result = await response.json();
-            // console.log('xmlreq: ' + result);
-        });
-
-        uie.createReq(ibut2, 'click', '/weather/chat', { f: 'UserRegzd08hvlKhwfu', params: ['userLogin', 'password'] }, res => { console.log('xmlreq: ' + res); })
-
+        ibut2.elm().addEventListener('click', function () { createDialog(); });
         return cont;
     }
 
@@ -136,14 +119,11 @@
     function createRegForm () {
         const cont = new uie.UIForm('regForm', ' tranOpac'); // posAbs
         cont.hide();
-        // cont.elm().style.visibility = 'hidden'; // для функции скрытия
         const regHdr = new uie.UICreateUIElm('regHdr', 'h1', 'Регистрация');
-        const login = new uie.UITextEditValid('login', 'Логин', '3-5 символов русского, латинского алфавита, цифры');
+        const login = new uie.UITextEditValid('login', 'Логин', '3-5 символов русского, латинского алфавита, цифры', '^[а-яА-Яa-zA-Z0-9]{3,10}$');
 
-        // uie.addReq(login.inp, 'click', '/weather/chat', { f: 'UserRegzd08hvlKhwfu', params: ['userLogin', 'password'] }, res => { login.inp.value = res; })
-
-        const passw1 = new uie.UITextEditValid('passw1', 'Пароль', '3-5 символов латинского алфавита, цифры');
-        const passw2 = new uie.UITextEditValid('passw2', 'Пароль ещё раз', '3-5 символов латинского алфавита, цифры');
+        const passw1 = new uie.UITextEditValid('passw1', 'Пароль', '3-5 символов латинского алфавита, цифры', '^[a-zA-Z0-9]{3,10}$');
+        const passw2 = new uie.UITextEditValid('passw2', 'Пароль ещё раз', '3-5 символов латинского алфавита, цифры', '^[a-zA-Z0-9]{3,10}$');
         cont.addElm(regHdr, login, passw1, passw2); // header,
 
         const buttPan = new uie.UICont('buttPan', 'flxCnt paddT');
@@ -151,6 +131,33 @@
         const butCancel = new uie.UITextButton('butCancel', 'Отмена', 'btnInit', '', '52px');
         buttPan.addElm(butOk, butCancel);
         cont.addElm(buttPan);
+
+        let f = null;
+        function before (params) {
+            f = controls.mainDlg.show('waitLog');
+            f.toggleAnim('example');
+
+            const inData = { f: 'UserRegzd08hvlKhwfu', params: [login.getText(), passw1.getText(), passw2.getText()] };
+            return inData;
+        }
+        function after (res) {
+            if (res.status === 'Ok') {
+                f = controls.mainDlg.show('logOk');
+                f.setText(`Вы успешно зарегестрированны как ${res.data[0]}.`);
+                f.hidePend(2000, () => { controls.mainDlg.close(); });
+            } else {
+                f = controls.mainDlg.show('logFail');
+                f.setText(`${res.status}`);
+                // f = controls.mainDlg.show('regForm');
+            }
+        }
+
+        uie.createReq(butOk, 'click', '/weather/chat', before, after);
+
+        butCancel.elm().addEventListener('click', function () {
+            controls.mainDlg.close();
+        });
+
         return cont;
     }
 
@@ -158,13 +165,12 @@
         // const cont = new uie.UICont('contLogForm', 'posAbs tranOpac');
         const cont = new uie.UIForm('logForm', 'posAbs tranOpac');
         cont.hide();
-        // cont.elm().style.visibility = 'hidden'; // для функции скрытия
         const logHdr = new uie.UICreateUIElm('logHdr', 'h1', 'Вход');
-        const login = new uie.UITextEditValid('login', 'Логин', '3-5 символов русского, латинского алфавита, цифры');
+        const login = new uie.UITextEditValid('login', 'Логин', '3-5 символов русского, латинского алфавита, цифры', '^[а-яА-Яa-zA-Z0-9]{3,10}$');
 
         // uie.addReq(login.inp, 'click', '/weather/chat', { f: 'UserRegzd08hvlKhwfu', params: ['userLogin', 'password'] }, res => { login.inp.value = res; })
 
-        const passw = new uie.UITextEditValid('passw', 'Пароль', '3-5 символов латинского алфавита, цифры');
+        const passw = new uie.UITextEditValid('passw', 'Пароль', '3-5 символов латинского алфавита, цифры', '^[a-zA-Z0-9]{3,10}$');
         const regLink = uie.UICreateHtmlElm('a', '', 'Регистрация');
         regLink.setAttribute('href', '#');
         regLink.addEventListener('click', () => { controls.mainDlg.show('regForm'); });
@@ -179,19 +185,21 @@
         let f = null;
         function before (params) {
             f = controls.mainDlg.show('waitLog');
-            // f = controls.mainDlg.show('logForm');
             f.toggleAnim('example');
+            return 0;
         }
         function after (res) {
-            if (res.stat === 'Ok') {
+            if (res) {
                 f = controls.mainDlg.show('logOk');
+                f.setText(`Вы вошли как ${res.login}.`);
                 f.hidePend(2000, () => { controls.mainDlg.close(); });
             } else {
                 f = controls.mainDlg.show('logFail');
             }
         }
 
-        uie.createFakeReq(butOk, 'click', '', { stat: 'Ok' }, before, after);
+        uie.createFakeReq(butOk, 'click', '', cont, before, after);
+        // uie.createReq(butOk, 'click', '', cont, before, after);
 
         butCancel.elm().addEventListener('click', function () {
             controls.mainDlg.close();
@@ -265,8 +273,10 @@
         const logForm = createLoginForm();
         const regForm = createRegForm();
         const waitLog = new uie.UIMsgBox('waitLog', 'Ожидаем...', 'xxx');
-        const logOk = new uie.UIMsgBox('logOk', 'Вход выполнен.', 'xxx');
-        const logFail = new uie.UIMsgBox('logFail', 'Ошибка при входе. Попробуйте позже.', 'xxx', 'Ok', () => { controls.mainDlg.close(); });
+        const logOk = new uie.UIMsgBox('logOk', 'xxx', 'xxx');
+        const logFail = new uie.UIMsgBox('logFail', 'Ошибка при входе. Попробуйте позже.', 'xxx', 'Ok',
+        // () => { controls.mainDlg.close(); });
+        () => {  controls.mainDlg.show('regForm'); });
 
         controls.mainDlg.addElm(logForm, regForm, waitLog, logOk, logFail);
         controls.mainDlg.show('logForm'); // regForm

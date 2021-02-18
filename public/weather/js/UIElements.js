@@ -35,34 +35,39 @@ function UIElms (oStyles) {
         return elm;
     }
 
-    this.createReq = function (elm, eAct, sUrl, oParams, cbFunc) {
+    this.createReq = function (elm, eAct, sUrl, cbBefore, cbAfter) {
         let outElm = elm;
-        if (elm.name) {
-            outElm = elm.elm();
-        }
+        if (elm.name) { outElm = elm.elm(); }
 
         outElm.addEventListener(eAct, async function () {
+            const data = cbBefore();
             const response = await fetch(sUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json;charset=utf-8' },
-                body: JSON.stringify(oParams)
+                body: JSON.stringify(data)
             });
 
-            const result = await response.json();
-            cbFunc(result);
+            const result = await response.json(); // { status: 'xxxx', data: [ , , , ] }
+            cbAfter(result);
         });
     }
 
     this.createFakeReq = function (elm, eAct, sUrl, oParams, cbBefore, cbAfter) {
         let outElm = elm;
-        if (elm.name) {
-            outElm = elm.elm();
-        }
+        if (elm.name) { outElm = elm.elm(); }
 
         outElm.addEventListener(eAct, async function () {
             cbBefore();
+            let out = {};
+            // console.log(oParams.login.getText());
+            const inData = { login: oParams.login.getText(), passw: oParams.passw.getText() }
+            if (inData.login) {
+                out.login = inData.login;
+                out.userID = 'jhgbvfdd';
+            } else out = null
+
             await self.delay(3000);
-            cbAfter(oParams);
+            cbAfter(out);
         });
     }
 
@@ -92,7 +97,7 @@ function UIElms (oStyles) {
             const vis = this.elm().style.visibility;
             // await self.delay(ms);
             if (vis === 'visible') {
-                console.log('tglVis do hidde ' + this.name());
+                // console.log('tglVis do hidde ' + this.name());
                 // this.elm().style.opacity = 0.0;
                 // transition: opacity 0.4s ease-out 0.2s; 0.4+0.2=0.6(600)
                 // setTimeout(() => { this.elm().style.visibility = 'hidden'; }, ms);
@@ -100,7 +105,7 @@ function UIElms (oStyles) {
                 // delay2(ms);
                 this.elm().style.visibility = 'hidden';
             } else {
-                console.log('tglVis do visible ' + this.name());
+                // console.log('tglVis do visible ' + this.name());
                 // this.elm().style.opacity = 1.0;
                 // setTimeout(() => { this.elm().style.visibility = 'visible'; }, ms);
                 // await self.delay(ms);
@@ -209,21 +214,26 @@ function UIElms (oStyles) {
     }
     this.UIImgButton.prototype = UIProto;
 
-    this.UITextEditValid = function (name, label, title, offsX = 0, offsY = 0) {
+    this.UITextEditValid = function (name, label, title, pattern) {
         this.uiCont = new self.UICont(name, 'flxCentH cntEnd');
         const lab = self.UICreateHtmlElm('span', '', label);
         const inp = document.createElement('input');
         inp.className = 'myInput';
         inp.setAttribute('type', 'text');
-        inp.pattern = '^[а-яА-Яa-zA-Z0-9]{3,10}$';
+        if (pattern) inp.pattern = pattern;
 
         const img = document.createElement('image');
         img.className = 'sysImg16';
-        img.style.backgroundPositionX = offsX;
-        img.style.backgroundPositionY = offsY;
         if (title) img.title = title;
-
         this.uiCont.addElm(lab, inp, img);
+
+        this.setNoticeIco = (clsCss, offsX, offsY) => {
+            img.className = clsCss;
+            img.style.backgroundPositionX = offsX;
+            img.style.backgroundPositionY = offsY;
+        }
+        this.getText = () => { return inp.value; }
+        this.setText = (text) => { inp.value = text; }
     }
     this.UITextEditValid.prototype = UIProto;
 
@@ -247,6 +257,9 @@ function UIElms (oStyles) {
         }
         this.toggleAnim = function (kfName) {
             if (this.img) this.img.toggleAnim(kfName);
+        }
+        this.setText = function (text) {
+            if (this.txt) this.txt.item.innerText = text;
         }
     }
     this.UIMsgBox.prototype = UIProto;

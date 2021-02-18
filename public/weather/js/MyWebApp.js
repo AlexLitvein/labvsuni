@@ -433,9 +433,8 @@ class CookiesMy {
     }
 
     CreateCookieString (name, obj) {
-        // const cook = name + '=' + this.objToString(obj) + ';max-age=2592000';
-        // document.cookie = cook;
-        return name + '=' + this.objToString(obj) + ';max-age=2592000';
+        // return name + '=' + this.objToString(obj) + ';max-age=2592000';
+        return name + '=' + JSON.stringify(obj) + ';max-age=2592000';
     }
 
     GetData (name) {
@@ -485,9 +484,5 @@ class CookiesMy {
         //    document.cookie = 'testcookie=test; maxage=0'; // Удалить cookie
         //    return Cookie.enabled.cache = true;
         // }
-    }
-
-    GetName () {
-        return 'CookiesMy';
     }
 }

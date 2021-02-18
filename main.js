@@ -19,12 +19,13 @@ const myAct = {
     try {
       const fu = myAct[name];
       if (fu) {
-        console.log(`myAct ${name} ${params}`);
-        const res = await fu(params);
+        console.log(`fName ${name} ${params}`);
+        const res = await fu(params); // TODO: ??? fu(...params)
         response.json(res);
       }
     } catch (e) {
-      response.json(e);
+      // response.json(e);
+      console.log(e);
     }
   }
 };
