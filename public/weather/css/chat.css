@@ -106,9 +106,7 @@ input:valid { background: rgb(0, 255, 55); }
 .posRel{
     position: relative;
 }
-.tranOpac{
-    transition: opacity 0.4s ease-out 0.2s;
-}
+
 .myInput{
     min-width: 10px;
     margin: 4px 2px;
@@ -145,6 +143,11 @@ input:valid { background: rgb(0, 255, 55); }
 }
 .btnInit:active{
     transform: translateY(1px);
+}
+.tranOpac{
+    /* opacity: 0.0;
+    visibility: hidden; */
+    /* transition: opacity 1.4s linear 0.2s; */
 }
 .anim {    
     /* animation-name: example; */

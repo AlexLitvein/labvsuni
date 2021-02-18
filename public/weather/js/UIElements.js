@@ -1,19 +1,23 @@
+// TODO: анимация css не выполняется когда работает синхронный пользовательский код
+
 function UIElms (oStyles) {
     const self = this;
     // const styles = oStyles;
-    // this.delay = async function (ms) {
-    //     const start = Date.now();
-    //     let now = start;
-    //     while (now - start < ms) {
-    //         now = Date.now();
-    //     }
-    // };
 
     this.delay = function (ms) { // use - await delay(xxx)
         return new Promise(resolve => {
             setTimeout(resolve, ms);
         });
     }
+
+    function delay2 (ms) {
+        const start = Date.now();
+        let now = start;
+        while (now - start < ms) {
+            now = Date.now();
+        }
+        // return ret;
+    };
 
     this.UICreateMany = function (arrPrms, constr) {
         const arrOut = [];
@@ -57,7 +61,7 @@ function UIElms (oStyles) {
 
         outElm.addEventListener(eAct, async function () {
             cbBefore();
-            await self.delay(2000);
+            await self.delay(3000);
             cbAfter(oParams);
         });
     }
@@ -84,24 +88,39 @@ function UIElms (oStyles) {
         toggleAnim: function (kfName) {
             this.elm().style.animationName = this.elm().style.animationName === '' ? kfName : '';
         },
-        tglVis: function (ms) {
+        tglVis: function () {
             const vis = this.elm().style.visibility;
+            // await self.delay(ms);
             if (vis === 'visible') {
-                this.elm().style.opacity = 0;
+                console.log('tglVis do hidde ' + this.name());
+                // this.elm().style.opacity = 0.0;
                 // transition: opacity 0.4s ease-out 0.2s; 0.4+0.2=0.6(600)
-                setTimeout(() => { this.elm().style.visibility = 'hidden'; }, ms);
+                // setTimeout(() => { this.elm().style.visibility = 'hidden'; }, ms);
+                // await self.delay(ms);
+                // delay2(ms);
+                this.elm().style.visibility = 'hidden';
             } else {
-                this.elm().style.opacity = 1;
+                console.log('tglVis do visible ' + this.name());
+                // this.elm().style.opacity = 1.0;
                 // setTimeout(() => { this.elm().style.visibility = 'visible'; }, ms);
+                // await self.delay(ms);
+                // delay2(ms);
                 this.elm().style.visibility = 'visible';
             }
         },
-        hide: function (ms, f) {
+        hidePend: function (ms, f) {
+            // await self.delay(ms);
+            // delay2(ms);
+            // this.hide();
+            // if (f) f();
             setTimeout(() => {
-                this.elm().style.visibility = 'hidden';
-                this.elm().style.opacity = 0;
+                this.hide();
                 if (f) f();
             }, ms);
+        },
+        hide: function () {
+            this.elm().style.visibility = 'hidden';
+            // this.elm().style.opacity = 0.0;
         }//,
     }
 
@@ -210,7 +229,7 @@ function UIElms (oStyles) {
 
     this.UIMsgBox = function (name, text, url = '', txtButt = '', cb) {
         this.uiCont = new self.UICont(name, 'flxColCnt posAbs tranOpac');
-        this.hide(0);
+        this.hide();
         this.txt = this.img = this.mButt = null;
         const szImg = '32px';
         if (url) {
@@ -235,7 +254,7 @@ function UIElms (oStyles) {
     this.UIPopupWnd = function (name) {
         this.uiCont = new self.UICont(name, 'popUpBgd flxCnt'); // фоновый контейнер
         this.uiCont.elm().style.visibility = 'hidden'; // для функции скрытия
-        // this.uiCont.hide(0);
+
         let dlgCont = new self.UICont('dlgCont', 'dlgCont bkg');
         this.uiCont.addElm(dlgCont);
         let currShow = null;
@@ -255,12 +274,13 @@ function UIElms (oStyles) {
         //     uielm.tglVis(ms);
         //     currShow = uielm;
         // }
-        this.show = function (elmName, ms) {
+        this.show = function (elmName) {
             this.uiCont.elm().style.visibility = 'visible';
-            if (currShow !== null) currShow.tglVis(ms);
             const e1 = dlgCont[elmName];
+
+            if (currShow !== null && currShow !== e1) currShow.tglVis();
             if (e1) {
-                e1.tglVis(ms);
+                e1.tglVis();
                 currShow = e1;
             }
             return e1;

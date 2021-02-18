@@ -2,6 +2,7 @@
     // loadFile('/weather/css/chat.css', 'css');
     loadFile('weather/css/chat.css', 'css');  // for offline
 
+    // const tHide = 1600;
     // loadFile('/weather/js/MyStyles.js', 'js');
     // loadFile('/weather/js/UIElements.js', 'js');
 
@@ -70,7 +71,7 @@
         const ibut2 = new uie.UITextButton('ibut2', 'Reg', 'btnInit', '', '52px');
         cont.addElm(ibut1, ibut2);
 
-        ibut1.elm().addEventListener('click', async function () {
+        ibut1.elm().addEventListener('click', function () {
             const dia = createDialog();
             // controls.body.addElm(dia);
             // addCtrl(dia);
@@ -133,8 +134,9 @@
     }
 
     function createRegForm () {
-        const cont = new uie.UICont('regForm', ' tranOpac'); // posAbs
-        cont.elm().style.visibility = 'hidden'; // для функции скрытия
+        const cont = new uie.UIForm('regForm', ' tranOpac'); // posAbs
+        cont.hide();
+        // cont.elm().style.visibility = 'hidden'; // для функции скрытия
         const regHdr = new uie.UICreateUIElm('regHdr', 'h1', 'Регистрация');
         const login = new uie.UITextEditValid('login', 'Логин', '3-5 символов русского, латинского алфавита, цифры');
 
@@ -155,14 +157,18 @@
     function createLoginForm () {
         // const cont = new uie.UICont('contLogForm', 'posAbs tranOpac');
         const cont = new uie.UIForm('logForm', 'posAbs tranOpac');
-        cont.elm().style.visibility = 'hidden'; // для функции скрытия
+        cont.hide();
+        // cont.elm().style.visibility = 'hidden'; // для функции скрытия
         const logHdr = new uie.UICreateUIElm('logHdr', 'h1', 'Вход');
         const login = new uie.UITextEditValid('login', 'Логин', '3-5 символов русского, латинского алфавита, цифры');
 
         // uie.addReq(login.inp, 'click', '/weather/chat', { f: 'UserRegzd08hvlKhwfu', params: ['userLogin', 'password'] }, res => { login.inp.value = res; })
 
         const passw = new uie.UITextEditValid('passw', 'Пароль', '3-5 символов латинского алфавита, цифры');
-        cont.addElm(logHdr, login, passw);
+        const regLink = uie.UICreateHtmlElm('a', '', 'Регистрация');
+        regLink.setAttribute('href', '#');
+        regLink.addEventListener('click', () => { controls.mainDlg.show('regForm'); });
+        cont.addElm(logHdr, login, passw, regLink);
 
         const buttPan = new uie.UICont('buttPan', 'flxCnt paddT');
         const butOk = new uie.UITextButton('butOk', 'Ок', 'btnInit', '', '52px');
@@ -172,19 +178,20 @@
 
         let f = null;
         function before (params) {
-            f = controls.mainDlg.show('waitLog', 600);
+            f = controls.mainDlg.show('waitLog');
+            // f = controls.mainDlg.show('logForm');
             f.toggleAnim('example');
         }
         function after (res) {
             if (res.stat === 'Ok') {
-                f = controls.mainDlg.show('logOk', 600);
-                f.hide(2000, () => { controls.mainDlg.close(); });
+                f = controls.mainDlg.show('logOk');
+                f.hidePend(2000, () => { controls.mainDlg.close(); });
             } else {
-                f = controls.mainDlg.show('logFail', 600);
+                f = controls.mainDlg.show('logFail');
             }
         }
 
-        uie.createFakeReq(butOk, 'click', '', { stat: 'Ook' }, before, after);
+        uie.createFakeReq(butOk, 'click', '', { stat: 'Ok' }, before, after);
 
         butCancel.elm().addEventListener('click', function () {
             controls.mainDlg.close();
@@ -240,7 +247,7 @@
     //         // regForm.tglVis();
     //         waitImg.tglVis();
     //         waitImg.toggleAnim('example');
-    //         waitImg.hide(2000, () => {
+    //         waitImg.hidePend(2000, () => {
     //             logForm.tglVis();
     //             waitImg.toggleAnim();
     //         }); // remCtrl('logRegDlg');
@@ -257,29 +264,12 @@
     function createDialog (params) {
         const logForm = createLoginForm();
         const regForm = createRegForm();
-        // const waitForm = new uie.UIMsgBox('waitLog', 'msgBoxImg', 'Waiting...', '', 'bottom');
         const waitLog = new uie.UIMsgBox('waitLog', 'Ожидаем...', 'xxx');
         const logOk = new uie.UIMsgBox('logOk', 'Вход выполнен.', 'xxx');
         const logFail = new uie.UIMsgBox('logFail', 'Ошибка при входе. Попробуйте позже.', 'xxx', 'Ok', () => { controls.mainDlg.close(); });
 
         controls.mainDlg.addElm(logForm, regForm, waitLog, logOk, logFail);
-        controls.mainDlg.show('logForm', 0); // regForm
-
-        // const buttPan = new uie.UICont('buttPan', 'flxCnt');
-        // const butOk = new uie.UITextButton('butOk', 'Ок', 'btnInit', '', '52px');
-        // const butCancel = new uie.UITextButton('butCancel', 'Отмена', 'btnInit', '', '52px');
-        // buttPan.addElm(butOk, butCancel);
-
-        // butOk.elm().addEventListener('click', function () {
-        //     logForm.tglVis();
-        //     // regForm.tglVis();
-        //     waitImg.tglVis();
-        //     waitImg.toggleAnim('example');
-        //     waitImg.hide(2000, () => {
-        //         logForm.tglVis();
-        //         waitImg.toggleAnim();
-        //     }); // remCtrl('logRegDlg');
-        // });
+        controls.mainDlg.show('logForm'); // regForm
     }
 
     function ititUI () {
