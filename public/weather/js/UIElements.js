@@ -40,15 +40,17 @@ function UIElms (oStyles) {
         if (elm.name) { outElm = elm.elm(); }
 
         outElm.addEventListener(eAct, async function () {
-            const data = cbBefore();
+            const data = await cbBefore();
+            console.log('cbBefore done');
             const response = await fetch(sUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json;charset=utf-8' },
                 body: JSON.stringify(data)
             });
 
+            // json(), возвращает промис
             const result = await response.json(); // { status: 'xxxx', data: [ , , , ] }
-            cbAfter(result);
+            await cbAfter(result);
         });
     }
 
@@ -281,17 +283,22 @@ function UIElms (oStyles) {
             dlgCont = new self.UICont('dlgCont', 'dlgCont bkg');
             this.uiCont.addElm(dlgCont);
         }
-        // this.show = function (uielm, ms) {
+        // this.show = async function (elmName, ms = 0) {
+        //     await self.delay(ms);
         //     this.uiCont.elm().style.visibility = 'visible';
-        //     if (currShow !== null) currShow.tglVis(ms);
-        //     uielm.tglVis(ms);
-        //     currShow = uielm;
+        //     if (currShow !== null) currShow.tglVis();
+        //     const e1 = dlgCont[elmName];
+        //     if (e1) {
+        //         e1.tglVis();
+        //         currShow = e1;
+        //     }
+        //     return e1;
         // }
-        this.show = function (elmName) {
+        this.show = async function (elmName, ms = 0) {
+            await self.delay(ms);
             this.uiCont.elm().style.visibility = 'visible';
+            if (currShow !== null) currShow.tglVis();
             const e1 = dlgCont[elmName];
-
-            if (currShow !== null && currShow !== e1) currShow.tglVis();
             if (e1) {
                 e1.tglVis();
                 currShow = e1;

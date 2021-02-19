@@ -13,14 +13,14 @@
 
     ititUI();
 
-    function addCtrl (uiName) {
-        controls[uiName.name()] = uiName;
+    function addCtrl (uielm) {
+        controls[uielm.name()] = uielm;
         // console.log(child.name());
         // console.log(controls);
         // parentEl.appendChild(child.elm());
     }
-    function remCtrl (uiName) {
-        const elm = controls[uiName];
+    function remCtrl (uielm) {
+        const elm = controls[uielm];
         const prnt = elm.elm().parentElement;
         prnt.removeChild(elm.elm());
         delete controls.uiName;
@@ -133,22 +133,23 @@
         cont.addElm(buttPan);
 
         let f = null;
-        function before (params) {
-            f = controls.mainDlg.show('waitLog');
+        async function before (params) {
+            f = await controls.mainDlg.show('waitLog');
             f.toggleAnim('example');
 
             const inData = { f: 'UserRegzd08hvlKhwfu', params: [login.getText(), passw1.getText(), passw2.getText()] };
             return inData;
         }
-        function after (res) {
+        async function after (res) {
+            console.log('after start ' + res.status);
+
             if (res.status === 'Ok') {
-                f = controls.mainDlg.show('logOk');
-                f.setText(`Вы успешно зарегестрированны как ${res.data[0]}.`);
-                f.hidePend(2000, () => { controls.mainDlg.close(); });
+                f = await controls.mainDlg.show('logOk');
+                f.setText('Вы успешно зарегестрированны');
+                f = await controls.mainDlg.show('logForm', 2000);
             } else {
-                f = controls.mainDlg.show('logFail');
+                f = await controls.mainDlg.show('logFail');
                 f.setText(`${res.status}`);
-                // f = controls.mainDlg.show('regForm');
             }
         }
 
@@ -183,18 +184,18 @@
         cont.addElm(buttPan);
 
         let f = null;
-        function before (params) {
-            f = controls.mainDlg.show('waitLog');
+        async function before (params) {
+            f = await controls.mainDlg.show('waitLog');
             f.toggleAnim('example');
             return 0;
         }
-        function after (res) {
+        async function after (res) {
             if (res) {
-                f = controls.mainDlg.show('logOk');
+                f = await controls.mainDlg.show('logOk');
                 f.setText(`Вы вошли как ${res.login}.`);
                 f.hidePend(2000, () => { controls.mainDlg.close(); });
             } else {
-                f = controls.mainDlg.show('logFail');
+                f = await controls.mainDlg.show('logFail');
             }
         }
 
@@ -222,52 +223,6 @@
         cont.addElm(rButt1, rButt2);
         return cont;
     }
-
-    // function createDialog (params) {
-    //     const cont = new uie.UICont('logRegDlg', 'popUpBgd flxCnt'); // фоновый контейнер
-    //     const popUpCont = new uie.UICont('popUpCont', 'flxColCntH bkg'); // dlg
-    //     cont.addElm(popUpCont);
-
-    //     const capt = createCaptionPan('Hello! Caption!');
-
-    //     // NOTE: тело диалога подстраивается под размер содержимого, но тк содержимое с
-    //     // абсолютной позиц, то тело схлопываетя в 0. По этому делаем контейнер
-    //     // (с самым большим содержимым) с обычныой позицией и скрываем его если надо,
-    //     // остальные с абсолютной
-    //     const dlgBodyCont = new uie.UICont('dlgBodyCont', 'flxCntGrw posRel');  // dlgBody
-    //     const logForm = createLoginForm();
-    //     const regForm = createRegForm();
-    //     // const waitImg = creaWaitForm('Waiting...');
-    //     const waitImg = new uie.UIWaitMsg('wait1', 'msgBoxImg', 'Waiting...', '', 'bottom');
-    //     regForm.tglVis();
-    //     // waitImg.tglVis();
-
-    //     dlgBodyCont.addElm(logForm, regForm, waitImg);
-
-    //     const buttPan = new uie.UICont('buttPan', 'flxCnt');
-
-    //     const butOk = new uie.UITextButton('butOk', 'Ок', 'btnInit', '', '52px');
-    //     const butCancel = new uie.UITextButton('butCancel', 'Отмена', 'btnInit', '', '52px');
-    //     buttPan.addElm(butOk, butCancel);
-
-    //     butOk.elm().addEventListener('click', function () {
-    //         logForm.tglVis();
-    //         // regForm.tglVis();
-    //         waitImg.tglVis();
-    //         waitImg.toggleAnim('example');
-    //         waitImg.hidePend(2000, () => {
-    //             logForm.tglVis();
-    //             waitImg.toggleAnim();
-    //         }); // remCtrl('logRegDlg');
-    //     });
-
-    //     butCancel.elm().addEventListener('click', function () {
-    //         remCtrl('logRegDlg');
-    //     });
-
-    //     popUpCont.addElm(capt, dlgBodyCont, buttPan);
-    //     return cont;
-    // }
 
     function createDialog (params) {
         const logForm = createLoginForm();

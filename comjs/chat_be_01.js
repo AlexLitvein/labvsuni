@@ -6,9 +6,18 @@ function MyChat () {
     const db = new IDB_My('chat_db');
     const collUser = 'users';
     const collMsg = 'msgs';
+    const loginUsers = [];
 
     function resOut (statusIn = 'Ok', dataIn = []) {
         return { status: statusIn, data: dataIn };
+    }
+
+    function msgDb (userId, msg) {
+        return { userId: userId, msg: msg };// в _id будет время
+    }
+
+    function userDb (login, pass) {
+        return { login: login, pass: pass };// в _id будет время и userId
     }
 
     function checkLogin (str) {
@@ -23,6 +32,25 @@ function MyChat () {
         return collMsg + '_' + date.getMonth() + '_' + date.getFullYear();
     }
 
+    // _id: fromDB, +idSess: xxx,  +lastPost: currtime
+    function addLoggedUser (usr) {
+        usr.idSess = uuidv4();
+        usr.lastPost = Date.now();
+        loginUsers.push(usr);
+        return usr.idSess;
+    }
+
+    function uuidv4 () {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            const r = Math.random() * 16 | 0; const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    function isLogin (idSession) { // возвр элемент массива или undefined
+        return loginUsers.find((element, index, array) => element.idSession === idSession);
+    };
+
     this.UserReg = async function (params) {
         const out = resOut();
         // if (checkLogin(params[0]) !== 0) throw ('Bad login');
@@ -31,54 +59,40 @@ function MyChat () {
         if (checkPassw(params[1]) !== 0) { out.status = 'Bad password'; return out; }
         if (params[1] !== params[2]) { out.status = 'Bad confirm password'; return out; }
 
-        const find = await db.isExist(collUser, { login: { $eq: params[0] } });
+        const usr = userDb(params[0], params[1]);
+        const find = await db.isExist(collUser, { login: { $eq: usr.login } });
 
         // console.log(`isExist? ${find}`);
 
         if (find !== null) { out.status = 'User existing'; return out; }
 
-        const res = await db.create(collUser, { login: params[0], pass: params[1] });
+        const res = await db.create(collUser, usr);
         if (!res) out.status = 'Error while adding user';
-        else out.data.push(params[0]);
+        // else out.data.push(usr.login);
         // console.log(out.data[0]);
         return out;
     }
 
     this.UserLogin = async function (params) {
         const out = resOut();
-        // if (checkLogin(params[0]) !== 0) throw ('Bad login');
-        // if (checkPassw(params[1]) !== 0) throw ('Bad password');
         if (checkLogin(params[0]) !== 0) { out.status = 'Bad login'; return out; };
         if (checkPassw(params[1]) !== 0) { out.status = 'Bad password'; return out; }
-        // if (params[1] !== params[2]) { out.status = 'Bad confirm password'; return out; }
 
-        const find = await db.isExist(collUser, { login: { $eq: params[0] } });
-
+        const usr = userDb(params[0], params[1]);
+        const arrUsrs = await db.find(collUser, { login: { $eq: usr.login } });
         // console.log(`isExist? ${find}`);
+        if (arrUsrs.length === 0) {
+            out.status = 'User not find'; return out;
+        } else {
+            if (arrUsrs[0].pass !== usr.pass) {
+                out.status = 'Bad password'; return out;
+            }
+        }
+        const usrIdSess = addLoggedUser(usr);
+        out.data.push(usrIdSess);
 
-        if (find !== null) { out.status = 'User existing'; return out; }
-
-        const res = await db.create(collUser, { login: params[0], pass: params[1] });
-        if (!res) out.status = 'Error while adding user';
-        else out.data.push(params[0]);
-        // console.log(out.data[0]);
-        return out;
+        return out; // []
     }
-
-    // this.AddMsg = function (params) {
-    //     // --------Temp------------------------
-    //     console.log('MyChat.AddMsg: ' + params);
-    //     (function (ms) {
-    //         const start = Date.now(); let now = start;
-    //         while (now - start < ms) {
-    //             now = Date.now();
-    //         }
-    //     })(3000);
-    //     // --------Temp^^^^--------------------
-    //     const collName = getMsgsCollName();
-    //     const res = db.create(collName, { user_id: params[0], msg: params[1] });
-    //     return res;
-    // }
 
     this.AddMsg = async function (params) {
         // --------Temp------------------------
@@ -90,8 +104,14 @@ function MyChat () {
         //     }
         // })(3000);
         // --------Temp^^^^--------------------
-        const collName = getMsgsCollName();
-        const res = await db.create(collName, { user_id: params[0], msg: params[1] });
+        let res;
+        const logUsr = isLogin(params[0]);
+        if (logUsr !== undefined) {
+            const mdb = msgDb(logUsr.userId, params[1]);
+            const collMsg = getMsgsCollName();
+            res = await db.create(collMsg, mdb);
+        }
+
         return res;
     }
 
