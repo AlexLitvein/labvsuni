@@ -74,6 +74,8 @@ function MyChat () {
     }
 
     this.UserLogin = async function (params) {
+        // console.log('UserLogin start');
+
         const out = resOut();
         if (checkLogin(params[0]) !== 0) { out.status = 'Bad login'; return out; };
         if (checkPassw(params[1]) !== 0) { out.status = 'Bad password'; return out; }
@@ -94,25 +96,20 @@ function MyChat () {
         return out; // []
     }
 
-    this.AddMsg = async function (params) {
-        // --------Temp------------------------
+    this.AddMsg = async function (params) { // [0]sessId, [1]msg
         console.log('MyChat.AddMsg: ' + params);
-        // (function (ms) {
-        //     const start = Date.now(); let now = start;
-        //     while (now - start < ms) {
-        //         now = Date.now();
-        //     }
-        // })(3000);
-        // --------Temp^^^^--------------------
-        let res;
+
+        const out = resOut();
         const logUsr = isLogin(params[0]);
         if (logUsr !== undefined) {
-            const mdb = msgDb(logUsr.userId, params[1]);
+            const mdb = msgDb(logUsr._id, params[1]);
             const collMsg = getMsgsCollName();
-            res = await db.create(collMsg, mdb);
+            const res = await db.create(collMsg, mdb);
+            out.data.push(res);
+        } else {
+            out.status = 'Need login';
         }
-
-        return res;
+        return out;
     }
 
     this.GetMsg = function (date, range, res) {

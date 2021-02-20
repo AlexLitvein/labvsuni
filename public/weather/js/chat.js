@@ -7,9 +7,11 @@
     // loadFile('/weather/js/UIElements.js', 'js');
 
     const topParent = document.getElementById('cont');
-    // console.log('MyStyles');
     const uie = new UIElms();
+    const mCookie = new CookiesMy();
     const controls = Object.create(null, {});
+    let idSess = mCookie.GetData('sid');
+    console.log('g_idSess ' + idSess);
 
     ititUI();
 
@@ -79,16 +81,10 @@
         const sender = new uie.UICont('sender', 'flx'); //, '16px'
         cont.addElm(sender);
 
-        const pSender = document.createElement('p');
-        pSender.className = 'chatText';
-        pSender.innerText = 'Sender: ' + uid;
-        // sender.elm().appendChild(pSender);
+        const pSender = uie.UICreateHtmlElm('p', 'chatText', 'Sender: ' + uid);
         sender.addElm(pSender);
 
-        const p = document.createElement('p');
-        p.className = 'chatText';
-        p.innerText = msg;
-        // cont.elm().appendChild(p);
+        const p = uie.UICreateHtmlElm('p', 'chatText', msg);
         cont.addElm(p);
 
         return cont;
@@ -105,14 +101,33 @@
         textBox.className = 'flxGrw';
         // inputMsg.elm().appendChild(textBox);
         inputMsg.addElm(textBox);
-        const inputButt = new uie.UITextButton('inputButt', 'OK', 'btnInit', h, h);
-        inputMsg.addElm(inputButt);
+        const sendButt = new uie.UITextButton('sendButt', 'OK', 'btnInit', h, h);
+        inputMsg.addElm(sendButt);
         cont.addElm(inputMsg);
 
-        // temp
-        const outMsg = outMsg1(7878, 'В первые годы после появления язык JavaScript чаще всего использовался для создания маленьких и простых сценариев, встроенных прямо в вебстраницы.');
-        chatArea.addElm(outMsg);
+        let f = null;
+        async function before (params) {
+            // f = await controls.mainDlg.show('waitLog');
+            // f.toggleAnim('example');
+            const inData = { f: 'AddMsgz08Kw4fu', params: [idSess, textBox.value] };
+            return inData;
+        }
+        async function after (res) {
+            console.log(res);
+            if (res.status === 'Ok') {
+                const outMsg = outMsg1(7878, textBox.value);
+                chatArea.addElm(outMsg);
+                textBox.value = '';
+            } else {
+                f = await controls.mainDlg.show('logFail');
+                f.setText(`${res.status}`);
+                if (res.status === 'Need login') {
+                    f = await controls.mainDlg.show('logForm', 2000);
+                }
+            }
+        }
 
+        uie.createReq(sendButt, 'click', '/weather/chat', before, after);
         return cont;
     }
 
@@ -187,20 +202,26 @@
         async function before (params) {
             f = await controls.mainDlg.show('waitLog');
             f.toggleAnim('example');
-            return 0;
+            const inData = { f: 'UserLoginz48h8vlhwu', params: [login.getText(), passw.getText()] };
+            return inData;
         }
         async function after (res) {
-            if (res) {
+            console.log(res);
+            if (res.status === 'Ok') {
+                idSess = res.data[0];
+                const sCook = mCookie.CreateCookieString('sid', idSess, 60 * 60 * 24);
+                document.cookie = sCook;
+
                 f = await controls.mainDlg.show('logOk');
-                f.setText(`Вы вошли как ${res.login}.`);
+                f.setText('Вход выполнен');
                 f.hidePend(2000, () => { controls.mainDlg.close(); });
             } else {
                 f = await controls.mainDlg.show('logFail');
+                f.setText(`${res.status}`);
             }
         }
 
-        uie.createFakeReq(butOk, 'click', '', cont, before, after);
-        // uie.createReq(butOk, 'click', '', cont, before, after);
+        uie.createReq(butOk, 'click', '/weather/chat', before, after);
 
         butCancel.elm().addEventListener('click', function () {
             controls.mainDlg.close();
@@ -230,8 +251,8 @@
         const waitLog = new uie.UIMsgBox('waitLog', 'Ожидаем...', 'xxx');
         const logOk = new uie.UIMsgBox('logOk', 'xxx', 'xxx');
         const logFail = new uie.UIMsgBox('logFail', 'Ошибка при входе. Попробуйте позже.', 'xxx', 'Ok',
-        // () => { controls.mainDlg.close(); });
-        () => {  controls.mainDlg.show('regForm'); });
+            // () => { controls.mainDlg.close(); });
+            () => { controls.mainDlg.show('logForm'); });
 
         controls.mainDlg.addElm(logForm, regForm, waitLog, logOk, logFail);
         controls.mainDlg.show('logForm'); // regForm
@@ -260,5 +281,7 @@
 
         const msgInput = createMsgPan('32px');
         rPan.addElm(msgInput);
+
+        if (!idSess) createDialog();
     }
 })();

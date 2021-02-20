@@ -54,24 +54,24 @@ function UIElms (oStyles) {
         });
     }
 
-    this.createFakeReq = function (elm, eAct, sUrl, oParams, cbBefore, cbAfter) {
-        let outElm = elm;
-        if (elm.name) { outElm = elm.elm(); }
+    // this.createFakeReq = function (elm, eAct, sUrl, oParams, cbBefore, cbAfter) {
+    //     let outElm = elm;
+    //     if (elm.name) { outElm = elm.elm(); }
 
-        outElm.addEventListener(eAct, async function () {
-            cbBefore();
-            let out = {};
-            // console.log(oParams.login.getText());
-            const inData = { login: oParams.login.getText(), passw: oParams.passw.getText() }
-            if (inData.login) {
-                out.login = inData.login;
-                out.userID = 'jhgbvfdd';
-            } else out = null
+    //     outElm.addEventListener(eAct, async function () {
+    //         cbBefore();
+    //         let out = {};
+    //         // console.log(oParams.login.getText());
+    //         const inData = { login: oParams.login.getText(), passw: oParams.passw.getText() }
+    //         if (inData.login) {
+    //             out.login = inData.login;
+    //             out.userID = 'jhgbvfdd';
+    //         } else out = null
 
-            await self.delay(3000);
-            cbAfter(out);
-        });
-    }
+    //         await self.delay(3000);
+    //         cbAfter(out);
+    //     });
+    // }
 
     const UIProto = {
         name: function () { return this.uiCont.nm; }, // стрелочные не канают
@@ -283,17 +283,6 @@ function UIElms (oStyles) {
             dlgCont = new self.UICont('dlgCont', 'dlgCont bkg');
             this.uiCont.addElm(dlgCont);
         }
-        // this.show = async function (elmName, ms = 0) {
-        //     await self.delay(ms);
-        //     this.uiCont.elm().style.visibility = 'visible';
-        //     if (currShow !== null) currShow.tglVis();
-        //     const e1 = dlgCont[elmName];
-        //     if (e1) {
-        //         e1.tglVis();
-        //         currShow = e1;
-        //     }
-        //     return e1;
-        // }
         this.show = async function (elmName, ms = 0) {
             await self.delay(ms);
             this.uiCont.elm().style.visibility = 'visible';
@@ -305,6 +294,7 @@ function UIElms (oStyles) {
             }
             return e1;
         }
+
         this.getItem = function (itemName) {
             return dlgCont[itemName];
         }

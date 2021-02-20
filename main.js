@@ -33,6 +33,7 @@ const myAct = {
 myAct.regFunc('AddMsgz08Kw4fu', chat.AddMsg);
 myAct.regFunc('GetMsgzd08Khw4fu', chat.GetMsg);
 myAct.regFunc('UserRegzd08hvlKhwfu', chat.UserReg);
+myAct.regFunc('UserLoginz48h8vlhwu', chat.UserLogin);
 
 // ---------------------------------------
 const app = express();
