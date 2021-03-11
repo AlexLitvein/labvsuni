@@ -25,7 +25,7 @@ function MyGraph (context, x, y, width, height) {
     const iDMainL = [3, 8]; // index Data for Main Line [x-idxStart, x-len]
     const iDMinL = [0, 2]; // index Data for Main Line [x-idxStart, x-len]
 
-    const clrBckGnd = '#072A60';
+    const clrBckGnd = '#046fe1'; // 046fe1b3  046fe100
     const clrMainLine = '#C4B8FF';
     const clrMinLine = '#C4B8FF';
     const clrTxt = '#C4B8FF';
